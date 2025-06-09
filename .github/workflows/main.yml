@@ -25,11 +25,16 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
 
-      - name: Fix DNS resolvers (systemd-resolved safe)
+      - name: Fix DNS resolvers
         run: |
-          sudo sed -i 's/^#DNS=/DNS=8.8.8.8 8.8.4.4/' /etc/systemd/resolved.conf
-          sudo systemctl restart systemd-resolved || true
+          # Check if /etc/resolv.conf is a symlink (systemd-resolved)
+          if [ -L /etc/resolv.conf ]; then
+            echo "Skipping DNS fix: systemd-resolved is managing DNS."
+          else
+            echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | sudo tee /etc/resolv.conf > /dev/null
+          fi
           sudo systemctl restart docker
+
 
       - name: Prepare environment
         run: |
