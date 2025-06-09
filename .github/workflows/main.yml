@@ -1,0 +1,25 @@
+name: Deploy to Raspberry Pi
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+      # Setup env
+      - name: Create new env and activate it
+        run: |
+          cp example.inventory.ini inventory.ini
+          cp example.config.yml config.yml
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      # restart docker
+      - name: down 
+        run: docker compose down
+      - name: up 
+        run: docker compose up -d
