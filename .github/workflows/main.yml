@@ -1,33 +1,52 @@
 name: Deploy to Raspberry Pi
+
 on:
   push:
     branches: [ master ]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: self-hosted
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-      # Setup env
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+
+      - name: Install Ansible
+        run: |
+          pip install --user ansible
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Set up Docker
         uses: docker/setup-docker-action@v4
-        
-      - name: Create new env and activate it
+
+      - name: Fix DNS resolvers (systemd-resolved safe)
         run: |
-          cp example.inventory.ini inventory.ini
+          sudo sed -i 's/^#DNS=/DNS=8.8.8.8 8.8.4.4/' /etc/systemd/resolved.conf
+          sudo systemctl restart systemd-resolved || true
+          sudo systemctl restart docker
+
+      - name: Prepare environment
+        run: |
+          id -u pi &>/dev/null || sudo adduser pi --disabled-password --gecos ""
+          sudo usermod -aG docker pi
+          sudo usermod -aG docker scry
+
+          echo -e '[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=scry' > inventory.ini
+
           cp example.config.yml config.yml
+
   deploy:
     runs-on: self-hosted
     needs: build
     steps:
-      # restart docker
-      - name: down 
-        run: docker compose down
-      - name: up 
-        run: docker compose up -d
+      - name: Run Ansible playbook
+        run: ~/.local/bin/ansible-playbook main.yml
+        
+      - name: list containers
+        run: docker ps 
