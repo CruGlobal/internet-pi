@@ -49,14 +49,12 @@ jobs:
           echo -e '[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=scry' > inventory.ini
 
           cp example.config.yml config.yml
-          cat << EOF >> config.yml
-custom_metrics_enable: true
-custom_metrics_bigquery_project: "${{ secrets.BIGQUERY_PROJECT }}"
-custom_metrics_location: "${{ secrets.METRICS_LOCATION }}"
-custom_metrics_prometheus_url: "http://prometheus:9090"
-custom_metrics_collection_interval: "1h"
-custom_metrics_credentials_path: "config/credentials.json"
-EOF
+          echo 'custom_metrics_enable: true' >> config.yml
+          echo 'custom_metrics_bigquery_project: "'${{ secrets.BIGQUERY_PROJECT }}'"' >> config.yml
+          echo 'custom_metrics_location: "'${{ secrets.METRICS_LOCATION }}'"' >> config.yml
+          echo 'custom_metrics_prometheus_url: "http://prometheus:9090"' >> config.yml
+          echo 'custom_metrics_collection_interval: "1h"' >> config.yml
+          echo 'custom_metrics_credentials_path: "config/credentials.json"' >> config.yml
 
   deploy:
     runs-on: self-hosted
