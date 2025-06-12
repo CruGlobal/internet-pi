@@ -41,15 +41,21 @@ jobs:
             sudo sh get-docker.sh
           fi
           
-          # Ensure Docker daemon is running
-          sudo systemctl start docker || true
-          sudo systemctl enable docker || true
+          # Check if Docker daemon is running
+          if ! systemctl is-active --quiet docker; then
+            sudo systemctl start docker || true
+            sudo systemctl enable docker || true
+          else
+            echo "Docker daemon is already running"
+          fi
           
-          # Add current user to docker group if not already added
+          # Check if user is in docker group
           if ! groups $USER | grep -q docker; then
             sudo usermod -aG docker $USER
             # Apply group changes without requiring logout
             newgrp docker || true
+          else
+            echo "User is already in docker group"
           fi
           
           # Verify Docker is working
@@ -61,31 +67,55 @@ jobs:
           if [ -L /etc/resolv.conf ]; then
             echo "Skipping DNS fix: systemd-resolved is managing DNS."
           else
-            echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | sudo tee /etc/resolv.conf > /dev/null
+            # Check if resolv.conf needs to be updated
+            if ! grep -q "nameserver 8.8.8.8" /etc/resolv.conf; then
+              echo -e 'nameserver 8.8.8.8\nnameserver 8.8.4.4' | sudo tee /etc/resolv.conf > /dev/null
+              sudo systemctl restart docker || true
+            else
+              echo "DNS resolvers are already configured"
+            fi
           fi
-          sudo systemctl restart docker || true
 
       - name: Prepare environment
         run: |
-          # Create and set permissions for required directories
-          sudo mkdir -p $HOME/pi-hole
-          sudo mkdir -p $HOME/internet-monitoring
-          sudo chown -R $USER:$USER $HOME/pi-hole
-          sudo chown -R $USER:$USER $HOME/internet-monitoring
-          sudo chmod 755 $HOME/pi-hole
-          sudo chmod 755 $HOME/internet-monitoring
+          # Check if directories exist and have correct permissions
+          for dir in "$HOME/pi-hole" "$HOME/internet-monitoring"; do
+            if [ ! -d "$dir" ]; then
+              sudo mkdir -p "$dir"
+              sudo chown -R $USER:$USER "$dir"
+              sudo chmod 755 "$dir"
+            elif [ "$(stat -c '%U:%G' "$dir")" != "$USER:$USER" ]; then
+              sudo chown -R $USER:$USER "$dir"
+            elif [ "$(stat -c '%a' "$dir")" != "755" ]; then
+              sudo chmod 755 "$dir"
+            else
+              echo "Directory $dir already exists with correct permissions"
+            fi
+          done
 
-          # Create pi user if it doesn't exist
-          id -u pi &>/dev/null || sudo adduser pi --disabled-password --gecos ""
-          sudo usermod -aG docker pi
-          sudo usermod -aG docker $USER
+          # Check if pi user exists
+          if ! id -u pi &>/dev/null; then
+            sudo adduser pi --disabled-password --gecos ""
+          else
+            echo "pi user already exists"
+          fi
+
+          # Check if users are in docker group
+          for user in pi $USER; do
+            if ! groups $user | grep -q docker; then
+              sudo usermod -aG docker $user
+            else
+              echo "User $user is already in docker group"
+            fi
+          done
 
           # Create config directory and write Google Cloud credentials
           mkdir -p config
           echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}' > config/credentials.json
           chmod 600 config/credentials.json
 
-          echo -e '[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=$USER' > inventory.ini
+          # Create inventory with actual username
+          echo -e "[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=$USER" > inventory.ini
 
           # Create config.yml with custom metrics enabled
           cp example.config.yml config.yml
@@ -111,7 +141,7 @@ jobs:
     needs: build
     steps:
       - name: Run Ansible playbook
-        run: ~/.local/bin/ansible-playbook main.yml
+        run: ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER"
         
       - name: list containers
         run: docker ps 
