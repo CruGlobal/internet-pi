@@ -127,7 +127,7 @@ services:
 
 {% if custom_metrics_enable %}
   custom-metrics:
-    image: roguisharcanetrickster/custom-metrics:latest
+    image: roguisharcanetrickster/custom-metrics:master
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
