@@ -50,13 +50,11 @@ jobs:
 
           # Create config.yml with custom metrics enabled
           cp example.config.yml config.yml
-          sed -i '/^# Custom Metrics configuration/d' config.yml  # Remove any existing custom metrics section
-# Custom Metrics configuration
+          sed -i '/^# Custom Metrics configuration/d' config.yml
           echo '
+# Custom Metrics configuration
 custom_metrics_enable: true
 custom_metrics_bigquery_project: "'${{ secrets.BIGQUERY_PROJECT }}'"
-custom_metrics_bigquery_dataset: "'${{ secrets.BIGQUERY_DATASET }}'"
-custom_metrics_bigquery_table: "'${{ secrets.BIGQUERY_TABLE }}'"
 custom_metrics_location: "'${{ secrets.METRICS_LOCATION }}'"
 custom_metrics_prometheus_url: "http://prometheus:9090"
 custom_metrics_collection_interval: "1h"
