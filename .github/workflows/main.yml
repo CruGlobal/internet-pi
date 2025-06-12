@@ -60,7 +60,10 @@ jobs:
 
           # Create config.yml with custom metrics enabled
           cp example.config.yml config.yml
-          sed -i '/^# Custom Metrics configuration/d' config.yml
+          
+          # Remove any existing custom metrics configuration
+          sed -i '/^# Custom Metrics configuration/,/^$/d' config.yml
+          sed -i '/^custom_metrics_enable:/,/^$/d' config.yml
           
           # Append custom metrics configuration
           {

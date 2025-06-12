@@ -124,3 +124,22 @@ services:
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     networks:
       - back-tier
+
+{% if custom_metrics_enable %}
+  custom-metrics:
+    image: roguisharcanetrickster/custom-metrics:latest
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/credentials.json:/config/credentials.json:ro
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/config/credentials.json
+      - BIGQUERY_PROJECT={{ custom_metrics_bigquery_project }}
+      - PROMETHEUS_URL=http://prometheus:9090
+      - LOCATION={{ custom_metrics_location }}
+      - COLLECTION_INTERVAL={{ custom_metrics_collection_interval }}
+    networks:
+      - back-tier
+    depends_on:
+      - prometheus
+{% endif %}
