@@ -50,7 +50,3 @@
     - name: Set up Starlink Monitoring.
       ansible.builtin.import_tasks: tasks/starlink.yml
       when: starlink_enable
-
-    - name: Set up Custom Metrics Monitoring.
-      ansible.builtin.import_tasks: tasks/custom-metrics.yml
-      when: custom_metrics_enable
