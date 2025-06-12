@@ -48,13 +48,19 @@ jobs:
 
           echo -e '[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=scry' > inventory.ini
 
+          # Create config.yml with custom metrics enabled
           cp example.config.yml config.yml
-          echo 'custom_metrics_enable: true' >> config.yml
-          echo 'custom_metrics_bigquery_project: "'${{ secrets.BIGQUERY_PROJECT }}'"' >> config.yml
-          echo 'custom_metrics_location: "'${{ secrets.METRICS_LOCATION }}'"' >> config.yml
-          echo 'custom_metrics_prometheus_url: "http://prometheus:9090"' >> config.yml
-          echo 'custom_metrics_collection_interval: "1h"' >> config.yml
-          echo 'custom_metrics_credentials_path: "config/credentials.json"' >> config.yml
+          sed -i '/^# Custom Metrics configuration/d' config.yml  # Remove any existing custom metrics section
+# Custom Metrics configuration
+          echo '
+custom_metrics_enable: true
+custom_metrics_bigquery_project: "'${{ secrets.BIGQUERY_PROJECT }}'"
+custom_metrics_bigquery_dataset: "'${{ secrets.BIGQUERY_DATASET }}'"
+custom_metrics_bigquery_table: "'${{ secrets.BIGQUERY_TABLE }}'"
+custom_metrics_location: "'${{ secrets.METRICS_LOCATION }}'"
+custom_metrics_prometheus_url: "http://prometheus:9090"
+custom_metrics_collection_interval: "1h"
+custom_metrics_credentials_path: "config/credentials.json"' >> config.yml
 
   deploy:
     runs-on: self-hosted
