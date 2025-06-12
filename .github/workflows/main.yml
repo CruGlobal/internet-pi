@@ -47,16 +47,25 @@ jobs:
 
       - name: Prepare environment
         run: |
+          # Create and set permissions for required directories
+          sudo mkdir -p $HOME/pi-hole
+          sudo mkdir -p $HOME/internet-monitoring
+          sudo chown -R $USER:$USER $HOME/pi-hole
+          sudo chown -R $USER:$USER $HOME/internet-monitoring
+          sudo chmod 755 $HOME/pi-hole
+          sudo chmod 755 $HOME/internet-monitoring
+
+          # Create pi user if it doesn't exist
           id -u pi &>/dev/null || sudo adduser pi --disabled-password --gecos ""
           sudo usermod -aG docker pi
-          sudo usermod -aG docker scry
+          sudo usermod -aG docker $USER
 
           # Create config directory and write Google Cloud credentials
           mkdir -p config
           echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}' > config/credentials.json
           chmod 600 config/credentials.json
 
-          echo -e '[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=scry' > inventory.ini
+          echo -e '[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=$USER' > inventory.ini
 
           # Create config.yml with custom metrics enabled
           cp example.config.yml config.yml
