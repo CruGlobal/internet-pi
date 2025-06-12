@@ -10,6 +10,54 @@ So that's what this is.
 
 ## Features
 
+## Custom Metrics Service
+
+The Custom Metrics service collects network metrics from Prometheus and stores them in Google BigQuery for long-term analysis and visualization.
+
+### Prerequisites
+
+1. Google Cloud Project with BigQuery enabled
+2. Service account with BigQuery write permissions
+3. Service account credentials JSON file
+
+### Setup
+
+1. Create a service account in Google Cloud Console with the following roles:
+   - BigQuery Data Editor
+   - BigQuery Job User
+
+2. Download the service account credentials JSON file
+
+3. Place the credentials file in the config directory:
+   ```bash
+   mkdir -p ~/config
+   cp /path/to/credentials.json ~/config/credentials.json
+   ```
+
+4. Update your `config.yml`:
+   ```yaml
+   custom_metrics_enable: true
+   custom_metrics_bigquery_project: "your-project-id"
+   custom_metrics_location: "your-location"
+   custom_metrics_prometheus_url: "http://prometheus:9090"
+   custom_metrics_collection_interval: "1h"
+   custom_metrics_credentials_path: "~/config/credentials.json"
+   ```
+
+5. Run the playbook:
+   ```bash
+   ansible-playbook main.yml
+   ```
+
+### Metrics Collected
+
+The service collects the following metrics from Prometheus:
+- `speedtest_download_bits_per_second`
+- `speedtest_upload_bits_per_second`
+- `speedtest_ping_latency_milliseconds`
+
+These metrics are stored in BigQuery for long-term analysis and can be used with Power BI for visualization.
+
 **Internet Monitoring**: Installs Prometheus and Grafana, along with a few Docker containers to monitor your Internet connection with Speedtest.net speedtests and HTTP tests so you can see uptime, ping stats, and speedtest results over time.
 
 ![Internet Monitoring Dashboard in Grafana](images/internet-monitoring.png)

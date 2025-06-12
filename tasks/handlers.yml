@@ -26,3 +26,8 @@
     build: never
     state: restarted
   become: false
+
+- name: restart custom-metrics
+  community.docker.docker_compose:
+    project_src: "{{ config_dir }}/custom-metrics"
+    state: present
