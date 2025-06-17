@@ -114,8 +114,8 @@ jobs:
           echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}' > config/credentials.json
           chmod 600 config/credentials.json
 
-          # Create inventory with actual username
-          echo -e "[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=$USER" > inventory.ini
+          # Create inventory with actual username and sudo configuration
+          echo -e "[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=$USER ansible_become=true ansible_become_method=sudo" > inventory.ini
 
           # Create config.yml with custom metrics enabled
           cp example.config.yml config.yml
@@ -140,8 +140,13 @@ jobs:
     runs-on: self-hosted
     needs: build
     steps:
+      - name: Configure sudo access for runner
+        run: |
+          echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
+          sudo chmod 0440 /etc/sudoers.d/$USER
+
       - name: Run Ansible playbook
-        run: ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER"
+        run: ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
         
       - name: list containers
-        run: docker ps 
+        run: docker ps
