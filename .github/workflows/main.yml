@@ -27,9 +27,16 @@ jobs:
             echo "pip3 is already installed"
           fi
 
+      - name: Handle Python environment management
+        run: |
+          # Remove EXTERNALLY-MANAGED file to allow pip installations
+          sudo rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED || true
+          sudo rm -f /usr/lib/python3.10/EXTERNALLY-MANAGED || true
+          sudo rm -f /usr/lib/python3.9/EXTERNALLY-MANAGED || true
+
       - name: Install Ansible
         run: |
-          pip install --user ansible
+          pip3 install --user ansible
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Set up Docker

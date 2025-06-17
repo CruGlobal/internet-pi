@@ -4,6 +4,11 @@
   become: true
 
   pre_tasks:
+    - name: Ignore PEP 668 because it's silly.
+      ansible.builtin.file:
+        path: /usr/lib/python3.11/EXTERNALLY-MANAGED
+        state: absent
+
     - name: Load configuration (with defaults from example file).
       ansible.builtin.include_vars: "{{ item }}"
       loop:
