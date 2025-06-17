@@ -2,3 +2,4 @@ inventory.ini
 config.yml
 .DS_Store
 .git_creden
+.vscode

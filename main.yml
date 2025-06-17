@@ -35,6 +35,10 @@
       ansible.builtin.import_tasks: tasks/internet-monitoring.yml
       when: monitoring_enable
 
+    - name: Set up Custom Metrics.
+      ansible.builtin.import_tasks: tasks/custom-metrics.yml
+      when: custom_metrics_enable
+
     - name: Set up Pi Hole.
       ansible.builtin.import_tasks: tasks/pi-hole.yml
       when: pihole_enable

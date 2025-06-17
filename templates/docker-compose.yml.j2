@@ -131,7 +131,7 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./config/credentials.json:/config/credentials.json:ro
+      - ./config:/config
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/config/credentials.json
       - BIGQUERY_PROJECT={{ custom_metrics_bigquery_project }}
