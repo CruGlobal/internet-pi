@@ -145,6 +145,13 @@ jobs:
           echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
           sudo chmod 0440 /etc/sudoers.d/$USER
 
+      - name: Create required directories
+        run: |
+          # Create internet-monitoring directory structure
+          sudo mkdir -p /root/internet-monitoring/{grafana,prometheus}
+          sudo chown -R $USER:$USER /root/internet-monitoring
+          sudo chmod -R 755 /root/internet-monitoring
+
       - name: Run Ansible playbook
         run: ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
         
