@@ -39,7 +39,7 @@
     mode: '0644'
 
 - name: Start custom-metrics containers
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ config_dir }}/custom-metrics"
     state: present
   notify: restart custom-metrics
