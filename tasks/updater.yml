@@ -1,0 +1,34 @@
+---
+- name: Create updater script
+  ansible.builtin.template:
+    src: templates/update.sh.j2
+    dest: /usr/local/bin/update-internet-pi
+    mode: '0755'
+
+- name: Create systemd service file
+  ansible.builtin.template:
+    src: templates/internet-pi-updater.service.j2
+    dest: /etc/systemd/system/internet-pi-updater.service
+    mode: '0644'
+
+- name: Create log directory
+  ansible.builtin.file:
+    path: /var/log
+    state: directory
+    mode: '0755'
+
+- name: Create log file
+  ansible.builtin.file:
+    path: /var/log/internet-pi-updates.log
+    state: touch
+    mode: '0644'
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start updater service
+  ansible.builtin.systemd:
+    name: internet-pi-updater.service
+    state: started
+    enabled: true 
