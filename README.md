@@ -1,6 +1,33 @@
 # Internet Pi
 
-[![CI](https://github.com/geerlingguy/internet-pi/workflows/CI/badge.svg?event=push)](https://github.com/geerlingguy/internet-pi/actions?query=workflow%3ACI)
+[![CI](https://github.com/roguisharcanetrickster/internet-pi/workflows/test/badge.svg?event=push)](https://github.com/roguisharcanetrickster/internet-pi/actions?query=workflow%3Atest)
+
+---
+
+## 🚀 Quick Start: Install on Raspberry Pi
+
+To install Internet Pi on a fresh Raspberry Pi, just run the following commands in your terminal:
+
+```bash
+# Clone the repository
+sudo apt-get update && sudo apt-get install -y git
+sudo git clone https://github.com/roguisharcanetrickster/internet-pi.git /opt/internet-pi
+cd /opt/internet-pi
+
+# Run the setup script (as root)
+sudo bash setup-pi.sh
+```
+
+This will:
+- Install all required dependencies
+- Clone the project
+- Install Ansible
+- Set up the auto-updater
+- **Run the Ansible playbook to fully configure your Pi**
+
+After running the script, your Pi will be fully set up and will automatically check for updates.
+
+---
 
 **A Raspberry Pi Configuration for Internet connectivity**
 

@@ -1,0 +1,18 @@
+[Unit]
+Description=Internet Pi Auto Updater
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/opt/internet-pi/update.sh
+Restart=on-failure
+RestartSec=300
+
+[Timer]
+OnBootSec=300
+OnUnitActiveSec=1h
+Unit=internet-pi-updater.service
+
+[Install]
+WantedBy=multi-user.target 
