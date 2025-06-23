@@ -43,13 +43,10 @@ if [ -d "$INSTALL_DIR" ]; then
         git fetch origin
         git reset --hard "origin/$BRANCH"
     else
-        warn "Directory exists but is not a git repository. Creating backup..."
-        if [ -d "$BACKUP_DIR" ]; then
-            rm -rf "$BACKUP_DIR"
-        fi
-        mv "$INSTALL_DIR" "$BACKUP_DIR"
-        mkdir -p "$INSTALL_DIR"
-        log "Backed up existing directory to $BACKUP_DIR"
+        warn "Directory exists but is not a git repository. Removing all contents for a fresh install..."
+        rm -rf "$INSTALL_DIR"/*
+        rm -rf "$INSTALL_DIR"/.[!.]* 2>/dev/null || true
+        log "Emptied $INSTALL_DIR for a fresh clone."
     fi
 else
     # Create installation directory
@@ -101,4 +98,4 @@ systemctl enable internet-pi-updater.service
 systemctl start internet-pi-updater.service
 
 log "Setup complete! The Pi will now automatically check for updates every hour."
-log "You can manually check for updates by running: update-internet-pi" 
+log "You can manually check for updates by running: update-internet-pi"
