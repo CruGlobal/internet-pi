@@ -15,7 +15,8 @@ sudo git clone https://github.com/roguisharcanetrickster/internet-pi.git /opt/in
 cd /opt/internet-pi
 
 # Run the setup script (as root)
-sudo bash setup-pi.sh
+chmod +x ./setup-pi.sh && sudo ./setup-pi.sh
+sudo ./setup-pi.sh
 ```
 
 This will:
