@@ -1,7 +1,7 @@
 ---
 - name: Create updater script
-  ansible.builtin.template:
-    src: templates/update.sh.j2
+  ansible.builtin.copy:
+    src: update.sh
     dest: /usr/local/bin/update-internet-pi
     mode: '0755'
 
