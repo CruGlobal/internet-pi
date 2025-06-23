@@ -4,7 +4,7 @@
 set -e
 
 # Configuration
-REPO_OWNER="your-github-username"
+REPO_OWNER="roguisharcanetrickster"
 REPO_NAME="internet-pi"
 BRANCH="master"
 INSTALL_DIR="/opt/internet-pi"

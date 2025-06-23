@@ -1,0 +1,21 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+      - pull_updates
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Make test script executable
+        run: chmod +x tests/test_update.sh
+
+      - name: Run tests
+        run: tests/test_update.sh

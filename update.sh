@@ -1,13 +1,14 @@
 #!/bin/bash
 
 # Configuration
-REPO_OWNER="your-github-username"
-REPO_NAME="internet-pi"
-BRANCH="master"
-UPDATE_INTERVAL=3600  # Check every hour
-LOG_FILE="/var/log/internet-pi-updates.log"
-INSTALL_DIR="/opt/internet-pi"
-LOCK_FILE="/tmp/internet-pi-update.lock"
+REPO_OWNER="${REPO_OWNER:-roguisharcanetrickster}"
+REPO_NAME="${REPO_NAME:-internet-pi}"
+BRANCH="${BRANCH:-master}"
+# UPDATE_INTERVAL=3600  # Check every hour
+UPDATE_INTERVAL=500 # DEV MODE check every 5 minutes
+LOG_FILE="${LOG_FILE:-/var/log/internet-pi-updates.log}"
+INSTALL_DIR="${INSTALL_DIR:-/opt/internet-pi}"
+LOCK_FILE="${LOCK_FILE:-/tmp/internet-pi-update.lock}"
 
 # Logging function
 log() {
