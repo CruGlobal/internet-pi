@@ -6,8 +6,8 @@
     mode: '0755'
 
 - name: Create systemd service file
-  ansible.builtin.template:
-    src: templates/internet-pi-updater.service.j2
+  ansible.builtin.copy:
+    src: internet-pi-updater.service
     dest: /etc/systemd/system/internet-pi-updater.service
     mode: '0644'
 
