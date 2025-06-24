@@ -17,7 +17,8 @@
   ansible.builtin.fail:
     msg: "Container {{ item.invocation.module_args.name }} is not healthy or not running!"
   when: >
+    (item.containers is not defined) or
     (item.containers | length == 0) or
     (item.containers[0].State.Status != 'running') or
-    (item.containers[0].State.Health.Status is defined and item.containers[0].State.Health.Status != 'healthy')
+    (item.containers[0].State.Health is defined and item.containers[0].State.Health.Status != 'healthy')
   loop: "{{ container_info.results }}"
