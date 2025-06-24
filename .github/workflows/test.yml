@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
@@ -20,11 +20,11 @@ jobs:
       - name: Run basic tests
         run: tests/test_update.sh
 
-      - name: Make installer executable
-        run: chmod +x setup-pi.sh
+      - name: add login data
+        run: sudo ./config.sh login # TODO 
 
       - name: Run installer script
-        run: sudo bash ./setup-pi.sh
+        run: sudo -E bash ./config.sh install
 
       - name: Check Ansible installation
         run: ansible --version
@@ -32,8 +32,10 @@ jobs:
       - name: Check Docker installation
         run: docker --version
 
-      - name: Check updater service
-        run: systemctl status internet-pi-updater.service || true
+      - name: Check updater service and timer
+        run: |
+          systemctl status internet-pi-updater.service || true
+          systemctl status internet-pi-updater.timer || true
 
       - name: Simulate missing BigQuery config
         run: |
@@ -46,7 +48,7 @@ jobs:
       - name: Check install fails with missing BigQuery config
         run: |
           set +e
-          ./config.sh install
+          sudo -E ./config.sh install
           if [ $? -eq 0 ]; then
             echo "Install should have failed due to missing BigQuery config, but it succeeded!" >&2
             exit 1
@@ -57,7 +59,7 @@ jobs:
         run: |
           echo '{"type": "service_account", "project_id": "test", "private_key_id": "test", "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEv...\\n-----END PRIVATE KEY-----\\n", "client_email": "test@test.iam.gserviceaccount.com", "client_id": "test", "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs", "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/test@test.iam.gserviceaccount.com"}' > $HOME/credentials.json
           export HOME=$HOME
-          yes "test-value" | bash ./login.sh < <(echo -e "test-project\ntest-location\n$HOME/credentials.json\n1h\nY")
+          yes "test-value" | sudo -E bash ./login.sh < <(echo -e "test-project\ntest-location\n$HOME/credentials.json\n1h\nY")
 
       - name: Check install succeeds after login
-        run: ./config.sh install
+        run: sudo -E ./config.sh install
