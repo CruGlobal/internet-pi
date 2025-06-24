@@ -42,7 +42,10 @@ setup_config() {
     # Copy example config if config doesn't exist
     if [ ! -f "$CONFIG_DIR/config.yml" ] && [ -f "$INSTALL_DIR/example.config.yml" ]; then
         cp "$INSTALL_DIR/example.config.yml" "$CONFIG_DIR/config.yml"
-        log "Created default config.yml. Please edit $CONFIG_DIR/config.yml to customize your setup."
+        # Generate a random password for pihole_password
+        RANDOM_PASS=$(tr -dc 'A-Za-z0-9!@#$%^&*()_+-=' </dev/urandom | head -c 20)
+        sed -i "s/^pihole_password: .*/pihole_password: \"$RANDOM_PASS\"/" "$CONFIG_DIR/config.yml"
+        log "Created default config.yml with a random Pi-hole password. Please check $CONFIG_DIR/config.yml."
     fi
     # Copy example inventory if inventory doesn't exist
     if [ ! -f "$CONFIG_DIR/inventory.ini" ] && [ -f "$INSTALL_DIR/example.inventory.ini" ]; then
@@ -110,10 +113,18 @@ show_help() {
     echo "Run as root (sudo) for installation and updates"
 }
 
+update_setup_script() {
+    log "Ensuring latest setup-pi.sh is present..."
+    curl -fsSL "https://raw.githubusercontent.com/roguisharcanetrickster/internet-pi/master/setup-pi.sh" -o "$SETUP_SCRIPT"
+    chmod +x "$SETUP_SCRIPT"
+    log "setup-pi.sh updated to latest version."
+}
+
 # Main script execution
 case "$1" in
     "install")
         check_root
+        update_setup_script
         if [ ! -f "$SETUP_SCRIPT" ]; then
             error "setup-pi.sh not found in $INSTALL_DIR. Please clone the repository first."
             exit 1
