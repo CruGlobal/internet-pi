@@ -25,8 +25,15 @@ error() {
 }
 
 if [ ! -f "$CONFIG_FILE" ]; then
-    error "config.yml not found at $CONFIG_FILE. Please ensure it exists."
-    exit 1
+    # try cp example.config.yml
+    if [ -f "$CONFIG_DIR/example.config.yml" ]; then
+        cp "$CONFIG_DIR/example.config.yml" "$CONFIG_FILE"
+        log "Created $CONFIG_FILE from example.config.yml."
+      #   rm defalt fields
+    else
+        error "config.yml not found at $CONFIG_FILE and example.config.yml not found in $CONFIG_DIR. Please ensure one exists."
+        exit 1
+    fi
 fi
 
 # Read current values
