@@ -145,82 +145,44 @@ ensure_config_yml() {
     fi
 }
 
-prompt_bigquery_config() {
-    local config_file="$CONFIG_DIR/config.yml"
-    if [ ! -f "$config_file" ]; then
-        warn "config.yml not found at $config_file"
-        return
-    fi
-    # Read current values
-    local project location credentials table interval
-    project=$(grep '^custom_metrics_bigquery_project:' "$config_file" | awk -F': ' '{print $2}' | tr -d '"')
-    location=$(grep '^custom_metrics_location:' "$config_file" | awk -F': ' '{print $2}' | tr -d '"')
-    credentials=$(grep '^custom_metrics_credentials_path:' "$config_file" | awk -F': ' '{print $2}' | tr -d '"')
-    interval=$(grep '^custom_metrics_collection_interval:' "$config_file" | awk -F': ' '{print $2}' | tr -d '"')
-    # Prompt for each value
-    echo
-    echo "BigQuery Configuration (leave blank to keep current value)"
-    echo "--------------------------------------------------------"
-    echo "Current BigQuery Project: $project"
-    read -p "Enter BigQuery Project ID [$project]: " input
-    if [ -n "$input" ]; then project="$input"; fi
-    echo "Location (ex: Miami_florida_south_office): $location"
-    read -p "Location (ex: Miami_florida_south_office) [$location]: " input
-    if [ -n "$input" ]; then location="$input"; fi
-    # credentials JSON
-    local default_cred_path="$CONFIG_DIR/credentials.json"
-    echo "Current Google Credentials Path: $credentials"
-    if [ ! -f "$default_cred_path" ]; then
-        echo "Paste your Google credentials JSON below. When finished, type END on a new line:"
-        json_input=""
-        while IFS= read -r line; do
-            if [[ "$line" == "END" ]]; then
-                break
-            fi
-            json_input+="$line"$'\n'
-        done
-        if [ -n "$json_input" ]; then
-            echo "$json_input" > "$default_cred_path"
-            chmod 600 "$default_cred_path"
-            credentials="$default_cred_path"
-            log "Saved Google credentials JSON to $default_cred_path."
-        fi
-    fi
-    echo "Current Collection Interval: $interval"
-    read -p "Enter collection interval (e.g., 1h) [$interval]: " input
-    if [ -n "$input" ]; then interval="$input"; fi
-    # Show summary and confirm
-    echo
-    echo "Summary of BigQuery configuration to be saved:"
-    echo "  Project: $project"
-    echo "  Location: $location"
-    echo "  Credentials: $credentials"
-    echo "  Interval: $interval"
-    read -p "Is this correct? [Y/n]: " confirm
-    if [[ "$confirm" =~ ^[Nn] ]]; then
-        echo "Aborting install. Please re-run and enter correct values."
-        exit 1
-    fi
-    # Update config.yml
-    sed -i "s|^custom_metrics_bigquery_project:.*|custom_metrics_bigquery_project: \"$project\"|" "$config_file"
-    sed -i "s|^custom_metrics_location:.*|custom_metrics_location: \"$location\"|" "$config_file"
-    sed -i "s|^custom_metrics_credentials_path:.*|custom_metrics_credentials_path: \"$credentials\"|" "$config_file"
-    sed -i "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"$interval\"|" "$config_file"
-    log "BigQuery configuration updated in $config_file."
-}
-
 # Main script execution
 case "$1" in
+    "login")
+        bash "$INSTALL_DIR/login.sh"
+        ;;
     "install")
+        # Check for required BigQuery config and credentials
+        CONFIG_FILE="$CONFIG_DIR/config.yml"
+        REQUIRED_KEYS=(
+            "custom_metrics_bigquery_project"
+            "custom_metrics_location"
+            "custom_metrics_credentials_path"
+            "custom_metrics_collection_interval"
+        )
+        MISSING_KEY=false
+        for key in "${REQUIRED_KEYS[@]}"; do
+            if ! grep -q "^$key:" "$CONFIG_FILE"; then
+                MISSING_KEY=true
+                break
+            fi
+        done
+        # Check credentials file
+        CRED_PATH=$(grep '^custom_metrics_credentials_path:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"')
+        if [ -z "$CRED_PATH" ]; then
+            CRED_PATH="$CONFIG_DIR/credentials.json"
+        fi
+        if [ "$MISSING_KEY" = true ] || [ ! -f "$CRED_PATH" ]; then
+            error "BigQuery configuration incomplete. Please run: ./config.sh login"
+            exit 1
+        fi
         check_root
         update_setup_script
         if [ ! -f "$SETUP_SCRIPT" ]; then
             error "setup-pi.sh not found in $INSTALL_DIR. Please clone the repository first."
             exit 1
         fi
-        sudo bash "$SETUP_SCRIPT"
         ensure_config_yml
-        prompt_bigquery_config
+        sudo bash "$SETUP_SCRIPT"
         setup_config
         show_status
         ;;

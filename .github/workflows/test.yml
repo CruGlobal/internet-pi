@@ -34,3 +34,30 @@ jobs:
 
       - name: Check updater service
         run: systemctl status internet-pi-updater.service || true
+
+      - name: Simulate missing BigQuery config
+        run: |
+          rm -f $HOME/config/credentials.json || true
+          sed -i '/^custom_metrics_bigquery_project:/d' $HOME/config.yml || true
+          sed -i '/^custom_metrics_location:/d' $HOME/config.yml || true
+          sed -i '/^custom_metrics_credentials_path:/d' $HOME/config.yml || true
+          sed -i '/^custom_metrics_collection_interval:/d' $HOME/config.yml || true
+
+      - name: Check install fails with missing BigQuery config
+        run: |
+          set +e
+          ./config.sh install
+          if [ $? -eq 0 ]; then
+            echo "Install should have failed due to missing BigQuery config, but it succeeded!" >&2
+            exit 1
+          fi
+          set -e
+
+      - name: Run login to fix BigQuery config
+        run: |
+          echo '{"type": "service_account", "project_id": "test", "private_key_id": "test", "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEv...\\n-----END PRIVATE KEY-----\\n", "client_email": "test@test.iam.gserviceaccount.com", "client_id": "test", "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs", "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/test@test.iam.gserviceaccount.com"}' > $HOME/credentials.json
+          export HOME=$HOME
+          yes "test-value" | bash ./login.sh < <(echo -e "test-project\ntest-location\n$HOME/credentials.json\n1h\nY")
+
+      - name: Check install succeeds after login
+        run: ./config.sh install
