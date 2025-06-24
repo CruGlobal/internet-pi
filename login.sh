@@ -29,7 +29,11 @@ if [ ! -f "$CONFIG_FILE" ]; then
     if [ -f "$CONFIG_DIR/example.config.yml" ]; then
         cp "$CONFIG_DIR/example.config.yml" "$CONFIG_FILE"
         log "Created $CONFIG_FILE from example.config.yml."
-      #   rm defalt fields
+        # Clean up default example values - macOS compatible sed
+        sed -i '' 's/^custom_metrics_bigquery_project: ".*"/custom_metrics_bigquery_project: ""/' "$CONFIG_FILE"
+        sed -i '' 's/^custom_metrics_location: ".*"/custom_metrics_location: ""/' "$CONFIG_FILE"
+        sed -i '' 's|^custom_metrics_credentials_path: ".*"|custom_metrics_credentials_path: "config/credentials.json"|' "$CONFIG_FILE"
+        sed -i '' 's/^custom_metrics_collection_interval: ".*"/custom_metrics_collection_interval: ""/' "$CONFIG_FILE"
     else
         error "config.yml not found at $CONFIG_FILE and example.config.yml not found in $CONFIG_DIR. Please ensure one exists."
         exit 1
@@ -38,10 +42,19 @@ fi
 
 # Read current values
 declare -A config
-config[project]=$(grep '^custom_metrics_bigquery_project:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"')
-config[location]=$(grep '^custom_metrics_location:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"')
-config[credentials]=$(grep '^custom_metrics_credentials_path:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"')
-config[interval]=$(grep '^custom_metrics_collection_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"')
+log "Reading current configuration..."
+config[project]=$(grep '^custom_metrics_bigquery_project:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[location]=$(grep '^custom_metrics_location:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[credentials]=$(grep '^custom_metrics_credentials_path:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[interval]=$(grep '^custom_metrics_collection_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+# Debug output
+log "Current configuration values:"
+echo "Project: '${config[project]}'"
+echo "Location: '${config[location]}'"
+echo "Credentials path: '${config[credentials]}'"
+echo "Interval: '${config[interval]}'"
+echo
 
 # Prompt for each value
 echo
@@ -58,18 +71,22 @@ if [ -n "$input" ]; then config[location]="$input"; fi
 # Credentials JSON
 cred_path="${config[credentials]}"
 if [ -z "$cred_path" ]; then 
-    # Create config directory if it doesn't exist
-    mkdir -p "$CONFIG_DIR/config"
-    cred_path="$CONFIG_DIR/config/credentials.json"
+    cred_path="config/credentials.json"  # Make this relative by default
 fi
 
 # Remove any template variables that might be in the path
 cred_path=$(echo "$cred_path" | sed 's/{{[^}]*}}//g' | sed 's/[ ]*//g')
 
+
+
+cred_path="./config/credentials.json"
+
+
 echo "Current Google Credentials Path: $cred_path"
 if [ ! -f "$cred_path" ]; then
     # Ensure the directory exists
-    mkdir -p "$(dirname "$cred_path")"
+    mkdir -p "config"
+    touch  "config"
     echo "Credentials file not found at $cred_path."
     echo "Paste your Google credentials JSON (as a single line):"
     read -r json_input

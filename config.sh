@@ -35,27 +35,6 @@ check_root() {
     fi
 }
 
-setup_config() {
-    log "Setting up configuration..."
-    # Create config directory if it doesn't exist
-    mkdir -p "$CONFIG_DIR"
-    # Copy example config if config doesn't exist
-    if [ ! -f "$CONFIG_DIR/config.yml" ] && [ -f "$INSTALL_DIR/example.config.yml" ]; then
-        cp "$INSTALL_DIR/example.config.yml" "$CONFIG_DIR/config.yml"
-        # Generate a random password for pihole_password
-        RANDOM_PASS=$(tr -dc 'A-Za-z0-9!@#$%^&*()_+-=' </dev/urandom | head -c 20)
-        sed -i "s/^pihole_password: .*/pihole_password: \"$RANDOM_PASS\"/" "$CONFIG_DIR/config.yml"
-        log "Created default config.yml with a random Pi-hole password. Please check $CONFIG_DIR/config.yml."
-    fi
-    # Copy example inventory if inventory doesn't exist
-    if [ ! -f "$CONFIG_DIR/inventory.ini" ] && [ -f "$INSTALL_DIR/example.inventory.ini" ]; then
-        cp "$INSTALL_DIR/example.inventory.ini" "$CONFIG_DIR/inventory.ini"
-        # Configure for local connection by default
-        sed -i 's/^192.168.1.10/#192.168.1.10/' "$CONFIG_DIR/inventory.ini"
-        sed -i 's/^#127.0.0.1/127.0.0.1/' "$CONFIG_DIR/inventory.ini"
-        log "Created default inventory.ini configured for local connection"
-    fi
-}
 
 report_enabled_services() {
     local config_file="$CONFIG_DIR/config.yml"
@@ -183,7 +162,6 @@ case "$1" in
         fi
         ensure_config_yml
         sudo bash "$SETUP_SCRIPT"
-        setup_config
         show_status
         ;;
     "update")
@@ -193,7 +171,6 @@ case "$1" in
             exit 1
         fi
         sudo bash "$SETUP_SCRIPT"
-        setup_config
         show_status
         ;;
     "status")
