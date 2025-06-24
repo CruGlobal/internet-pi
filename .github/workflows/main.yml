@@ -146,6 +146,7 @@ jobs:
   deploy:
     runs-on: self-hosted
     needs: build
+    timeout-minutes: 5
     steps:
       - name: Configure sudo access for runner
         run: |
@@ -160,7 +161,8 @@ jobs:
           sudo chmod -R 755 /root/internet-monitoring
 
       - name: Run Ansible playbook
-        run: ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
-        
+        run: |
+          timeout 300 ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
+
       - name: list containers
         run: docker ps
