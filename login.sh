@@ -57,18 +57,22 @@ if [ -n "$input" ]; then config[location]="$input"; fi
 
 # Credentials JSON
 cred_path="${config[credentials]}"
-if [ -z "$cred_path" ]; then cred_path="$DEFAULT_CRED_PATH"; fi
+if [ -z "$cred_path" ]; then 
+    # Create config directory if it doesn't exist
+    mkdir -p "$CONFIG_DIR/config"
+    cred_path="$CONFIG_DIR/config/credentials.json"
+fi
+
+# Remove any template variables that might be in the path
+cred_path=$(echo "$cred_path" | sed 's/{{[^}]*}}//g' | sed 's/[ ]*//g')
+
 echo "Current Google Credentials Path: $cred_path"
 if [ ! -f "$cred_path" ]; then
+    # Ensure the directory exists
+    mkdir -p "$(dirname "$cred_path")"
     echo "Credentials file not found at $cred_path."
-    echo "Paste your Google credentials JSON below. When finished, type END on a new line:"
-    json_input=""
-    while IFS= read -r line; do
-        if [[ "$line" == "END" ]]; then
-            break
-        fi
-        json_input+="$line"$'\n'
-    done
+    echo "Paste your Google credentials JSON (as a single line):"
+    read -r json_input
     if [ -n "$json_input" ]; then
         echo "$json_input" > "$cred_path"
         chmod 600 "$cred_path"
