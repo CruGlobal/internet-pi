@@ -17,5 +17,20 @@ jobs:
       - name: Make test script executable
         run: chmod +x tests/test_update.sh
 
-      - name: Run tests
+      - name: Run basic tests
         run: tests/test_update.sh
+
+      - name: Make installer executable
+        run: chmod +x setup-pi.sh
+
+      - name: Run installer script
+        run: sudo bash ./setup-pi.sh
+
+      - name: Check Ansible installation
+        run: ansible --version
+
+      - name: Check Docker installation
+        run: docker --version
+
+      - name: Check updater service
+        run: systemctl status internet-pi-updater.service || true

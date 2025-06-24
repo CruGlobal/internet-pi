@@ -97,5 +97,14 @@ systemctl daemon-reload
 systemctl enable internet-pi-updater.service
 systemctl start internet-pi-updater.service
 
+# Run Ansible playbook to fully configure the system
+log "Installing Ansible Galaxy requirements..."
+ansible-galaxy collection install -r requirements.yml
+
+log "Running Ansible playbook to configure Internet Pi..."
+ansible-playbook main.yml
+
+log "Ansible playbook completed."
+
 log "Setup complete! The Pi will now automatically check for updates every hour."
 log "You can manually check for updates by running: update-internet-pi"
