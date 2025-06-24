@@ -21,7 +21,24 @@ jobs:
         run: tests/test_update.sh
 
       - name: add login data
-        run: sudo ./config.sh login # TODO 
+        run: |
+          # Create a dummy credentials file in the current directory.
+          echo '{
+            "type": "service_account",
+            "project_id": "test-project",
+            "private_key_id": "test-key-id",
+            "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC9QFxMhxq7YgS0\n-----END PRIVATE KEY-----\n",
+            "client_email": "test@test-project.iam.gserviceaccount.com",
+            "client_id": "123456789",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/test@test-project.iam.gserviceaccount.com"
+          }' | sudo tee credentials.json > /dev/null
+
+          # Automate the interactive login script by feeding it answers
+          # via process substitution.
+          sudo ./config.sh login < <(printf "test-project\nus-central1\ny\ncredentials.json\n1h\ny\n")
 
       - name: Run installer script
         run: sudo -E bash ./config.sh install
