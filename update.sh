@@ -7,7 +7,6 @@ BRANCH="${BRANCH:-master}"
 # UPDATE_INTERVAL=3600  # Check every hour
 UPDATE_INTERVAL=500 # DEV MODE check every 5 minutes
 LOG_FILE="${LOG_FILE:-/var/log/internet-pi-updates.log}"
-INSTALL_DIR="${INSTALL_DIR:-/opt/internet-pi}"
 LOCK_FILE="${LOCK_FILE:-/tmp/internet-pi-update.lock}"
 
 # Logging function
@@ -24,12 +23,6 @@ fi
 # Create lock file
 touch "$LOCK_FILE"
 
-# Ensure we're in the installation directory
-cd "$INSTALL_DIR" || {
-    log "Failed to change to $INSTALL_DIR"
-    rm -f "$LOCK_FILE"
-    exit 1
-}
 
 # Get the latest commit hash from GitHub
 LATEST_COMMIT=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/commits/$BRANCH" | grep -m 1 '"sha":' | cut -d'"' -f4)

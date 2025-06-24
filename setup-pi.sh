@@ -7,8 +7,8 @@ set -e
 REPO_OWNER="roguisharcanetrickster"
 REPO_NAME="internet-pi"
 BRANCH="master"
-INSTALL_DIR="/opt/internet-pi"
-BACKUP_DIR="/opt/internet-pi.backup"
+INSTALL_DIR="$PWD/internet-pi"
+BACKUP_DIR="$PWD/internet-pi.backup"
 
 # Color codes for output
 GREEN='\033[0;32m'
@@ -88,6 +88,16 @@ chmod +x /usr/local/bin/update-internet-pi
 
 # Copy the systemd service
 cp "$INSTALL_DIR/internet-pi-updater.service" /etc/systemd/system/
+
+# Insert or replace ExecStart in the service file with the correct path
+SERVICE_FILE="/etc/systemd/system/internet-pi-updater.service"
+EXEC_PATH="/usr/local/bin/update-internet-pi"
+if grep -q '^ExecStart=' "$SERVICE_FILE"; then
+    sed -i "s|^ExecStart=.*$|ExecStart=$EXEC_PATH|" "$SERVICE_FILE"
+else
+    # Insert ExecStart after [Service] section header
+    sed -i "/^\[Service\]/a ExecStart=$EXEC_PATH" "$SERVICE_FILE"
+fi
 
 # Reload systemd
 log "Configuring system service..."

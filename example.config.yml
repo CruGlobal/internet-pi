@@ -34,11 +34,11 @@ prometheus_tsdb_retention_time: 90d
 
 # Custom Metrics configuration (Also requires `monitoring_enable`)
 custom_metrics_enable: true
-# custom_metrics_bigquery_project: "your-project-id"
-# custom_metrics_location: "your-location"
+custom_metrics_bigquery_project: "your-project-id"
+custom_metrics_location: "your-location"
 custom_metrics_prometheus_url: "http://prometheus:9090"
-custom_metrics_collection_interval: "5min"  # Hourly collection interval
-# custom_metrics_credentials_path: "{{ config_dir }}/config/credentials.json"
+custom_metrics_collection_interval: "5min"  # collection interval
+custom_metrics_credentials_path: "{{ config_dir }}/config/credentials.json"
 
 # Shelly Plug configuration. (Also requires `monitoring_enable`)
 shelly_plug_enable: false
