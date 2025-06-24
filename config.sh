@@ -120,6 +120,23 @@ update_setup_script() {
     log "setup-pi.sh updated to latest version."
 }
 
+# Ensure installation directory exists and is writable
+if [ ! -d "$INSTALL_DIR" ]; then
+    echo "Creating installation directory: $INSTALL_DIR"
+    sudo mkdir -p "$INSTALL_DIR"
+fi
+
+if [ ! -w "$INSTALL_DIR" ]; then
+    echo "Setting ownership of $INSTALL_DIR to $USER"
+    sudo chown "$USER:$USER" "$INSTALL_DIR"
+fi
+
+# Double-check we can write to the directory
+if [ ! -w "$INSTALL_DIR" ]; then
+    echo "ERROR: Cannot write to $INSTALL_DIR. Please check permissions and try again."
+    exit 1
+fi
+
 # Main script execution
 case "$1" in
     "install")
