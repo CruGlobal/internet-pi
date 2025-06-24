@@ -29,11 +29,11 @@ if [ ! -f "$CONFIG_FILE" ]; then
     if [ -f "$CONFIG_DIR/example.config.yml" ]; then
         cp "$CONFIG_DIR/example.config.yml" "$CONFIG_FILE"
         log "Created $CONFIG_FILE from example.config.yml."
-        # Clean up default example values - macOS compatible sed
-        sed -i '' 's/^custom_metrics_bigquery_project: ".*"/custom_metrics_bigquery_project: ""/' "$CONFIG_FILE"
-        sed -i '' 's/^custom_metrics_location: ".*"/custom_metrics_location: ""/' "$CONFIG_FILE"
-        sed -i '' 's|^custom_metrics_credentials_path: ".*"|custom_metrics_credentials_path: "config/credentials.json"|' "$CONFIG_FILE"
-        sed -i '' 's/^custom_metrics_collection_interval: ".*"/custom_metrics_collection_interval: ""/' "$CONFIG_FILE"
+        # Clean up default example values - Linux compatible sed
+        sed -i 's/^custom_metrics_bigquery_project: ".*"/custom_metrics_bigquery_project: ""/' "$CONFIG_FILE"
+        sed -i 's/^custom_metrics_location: ".*"/custom_metrics_location: ""/' "$CONFIG_FILE"
+        sed -i 's|^custom_metrics_credentials_path: ".*"|custom_metrics_credentials_path: "config/credentials.json"|' "$CONFIG_FILE"
+        sed -i 's/^custom_metrics_collection_interval: ".*"/custom_metrics_collection_interval: ""/' "$CONFIG_FILE"
     else
         error "config.yml not found at $CONFIG_FILE and example.config.yml not found in $CONFIG_DIR. Please ensure one exists."
         exit 1
@@ -132,10 +132,10 @@ if [[ "$confirm" =~ ^[Nn] ]]; then
     exit 1
 fi
 
-# Update config.yml with proper file path
-sed -i '' "s|^custom_metrics_bigquery_project:.*|custom_metrics_bigquery_project: \"${config[project]}\"|" "$CONFIG_FILE"
-sed -i '' "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[location]}\"|" "$CONFIG_FILE"
-sed -i '' "s|^custom_metrics_credentials_path:.*|custom_metrics_credentials_path: \"${config[credentials]}\"|" "$CONFIG_FILE"
-sed -i '' "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[interval]}\"|" "$CONFIG_FILE"
+# Update config.yml with proper file path - Linux compatible sed
+sed -i "s|^custom_metrics_bigquery_project:.*|custom_metrics_bigquery_project: \"${config[project]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[location]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_credentials_path:.*|custom_metrics_credentials_path: \"${config[credentials]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[interval]}\"|" "$CONFIG_FILE"
 
 log "BigQuery configuration updated in $CONFIG_FILE." 
