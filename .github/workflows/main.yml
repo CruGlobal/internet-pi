@@ -116,32 +116,18 @@ jobs:
             fi
           done
 
-          # Create config directory and write Google Cloud credentials
-          mkdir -p config
-          echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}' > config/credentials.json
-          chmod 600 config/credentials.json
-
           # Create inventory with actual username and sudo configuration
           echo -e "[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=$USER ansible_become=true ansible_become_method=sudo" > inventory.ini
 
-          # Create config.yml with custom metrics enabled
-          cp example.config.yml config.yml
-          
-          # Remove any existing custom metrics configuration
-          sed -i '/^# Custom Metrics configuration/,/^$/d' config.yml
-          sed -i '/^custom_metrics_enable:/,/^$/d' config.yml
-          
-          # Append custom metrics configuration
+          # Set up BigQuery configuration using config.sh login
           {
-            echo ""
-            echo "# Custom Metrics configuration"
-            echo "custom_metrics_enable: true"
-            echo "custom_metrics_bigquery_project: \"${{ secrets.BIGQUERY_PROJECT }}\""
-            echo "custom_metrics_location: \"${{ secrets.METRICS_LOCATION }}\""
-            echo "custom_metrics_prometheus_url: \"http://prometheus:9090\""
-            echo "custom_metrics_collection_interval: \"1h\""
-            echo "custom_metrics_credentials_path: \"config/credentials.json\""
-          } >> config.yml
+            echo "${{ secrets.BIGQUERY_PROJECT }}"  # Project ID
+            echo "${{ secrets.METRICS_LOCATION }}"  # Location
+            echo "y"  # Yes, update credentials
+            echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}'  # Credentials JSON
+            echo "1h"  # Collection interval
+            echo "y"  # Confirm settings
+          } | ./config.sh login
 
   deploy:
     runs-on: self-hosted
@@ -163,6 +149,5 @@ jobs:
       - name: Run Ansible playbook
         run: |
           timeout 300 ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
-
       - name: list containers
         run: docker ps
