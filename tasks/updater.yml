@@ -11,6 +11,12 @@
     dest: /etc/systemd/system/internet-pi-updater.service
     mode: '0644'
 
+- name: Create systemd timer file
+  ansible.builtin.copy:
+    src: internet-pi-updater.timer
+    dest: /etc/systemd/system/internet-pi-updater.timer
+    mode: '0644'
+
 - name: Create log directory
   ansible.builtin.file:
     path: /var/log
@@ -27,8 +33,8 @@
   ansible.builtin.systemd:
     daemon_reload: true
 
-- name: Enable and start updater service
+- name: Enable and start updater timer
   ansible.builtin.systemd:
-    name: internet-pi-updater.service
+    name: internet-pi-updater.timer
     state: started
     enabled: true 

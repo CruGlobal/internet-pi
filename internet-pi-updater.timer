@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer for Internet Pi Auto Updater
+
+[Timer]
+OnBootSec=300
+OnUnitActiveSec=1h
+Unit=internet-pi-updater.service
+
+[Install]
+WantedBy=timers.target 
