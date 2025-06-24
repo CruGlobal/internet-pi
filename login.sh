@@ -3,7 +3,7 @@
 # Exit on error
 set -e
 
-CONFIG_DIR="$HOME"
+CONFIG_DIR="$PWD"
 CONFIG_FILE="$CONFIG_DIR/config.yml"
 CRED_KEY="custom_metrics_credentials_path"
 DEFAULT_CRED_PATH="$CONFIG_DIR/credentials.json"

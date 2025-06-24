@@ -5,7 +5,7 @@ set -e
 
 # Configuration variables
 INSTALL_DIR="$PWD"
-CONFIG_DIR="$HOME"
+CONFIG_DIR="$PWD"
 LOG_FILE="/var/log/internet-pi-updates.log"
 SETUP_SCRIPT="$INSTALL_DIR/setup-pi.sh"
 
