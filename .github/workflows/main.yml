@@ -151,3 +151,6 @@ jobs:
           timeout 300 ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
       - name: list containers
         run: docker ps
+
+      - name: Check all containers are stable
+        ansible.builtin.import_tasks: tasks/check-containers.yml

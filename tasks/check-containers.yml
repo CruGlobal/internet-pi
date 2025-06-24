@@ -1,0 +1,23 @@
+---
+- name: Get all running containers
+  community.docker.docker_container_info:
+    name: "{{ item }}"
+  loop:
+    - internet-monitoring-custom-metrics-1
+    - pihole
+    - pihole-exporter
+    - internet-monitoring-grafana-1
+    - internet-monitoring-prometheus-1
+    - internet-monitoring-ping-1
+    - internet-monitoring-speedtest-1
+    - internet-monitoring-nodeexp-1
+  register: container_info
+
+- name: Fail if any container is not healthy or not running
+  ansible.builtin.fail:
+    msg: "Container {{ item.invocation.module_args.name }} is not healthy or not running!"
+  when: >
+    (item.containers | length == 0) or
+    (item.containers[0].State.Status != 'running') or
+    (item.containers[0].State.Health.Status is defined and item.containers[0].State.Health.Status != 'healthy')
+  loop: "{{ container_info.results }}"
