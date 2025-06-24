@@ -46,7 +46,7 @@ log "Reading current configuration..."
 config[project]=$(grep '^custom_metrics_bigquery_project:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[location]=$(grep '^custom_metrics_location:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[credentials]=$(grep '^custom_metrics_credentials_path:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-config[interval]=$(grep '^custom_metrics_collection_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[interval]=$(grep '^custom_metrics_collection_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/#.*$//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 # Debug output
 log "Current configuration values:"
@@ -74,19 +74,18 @@ if [ -z "$cred_path" ]; then
     cred_path="config/credentials.json"  # Make this relative by default
 fi
 
-# Remove any template variables that might be in the path
-cred_path=$(echo "$cred_path" | sed 's/{{[^}]*}}//g' | sed 's/[ ]*//g')
+# Remove any template variables that might be in the path and clean it up
+cred_path=$(echo "$cred_path" | sed 's/{{[^}]*}}//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
-
-
-cred_path="./config/credentials.json"
-
+# If path is not absolute (doesn't start with /), make it relative to PWD
+if [[ "$cred_path" != /* ]] && [[ "$cred_path" != "" ]]; then
+    cred_path="$PWD/$cred_path"
+fi
 
 echo "Current Google Credentials Path: $cred_path"
 if [ ! -f "$cred_path" ]; then
     # Ensure the directory exists
-    mkdir -p "config"
-    touch  "config"
+    mkdir -p "$(dirname "$cred_path")"
     echo "Credentials file not found at $cred_path."
     echo "Paste your Google credentials JSON (as a single line):"
     read -r json_input
@@ -100,6 +99,20 @@ if [ ! -f "$cred_path" ]; then
     fi
 else
     echo "Credentials file exists at $cred_path."
+    read -p "Do you want to update the credentials? [y/N]: " update_creds
+    if [[ "$update_creds" =~ ^[Yy] ]]; then
+        echo "Paste your new Google credentials JSON (as a single line):"
+        read -r json_input
+        if [ -n "$json_input" ]; then
+            echo "$json_input" > "$cred_path"
+            chmod 600 "$cred_path"
+            log "Updated Google credentials JSON at $cred_path."
+        else
+            warn "No new credentials provided. Keeping existing file."
+        fi
+    else
+        log "Keeping existing credentials file."
+    fi
 fi
 config[credentials]="$cred_path"
 
@@ -119,10 +132,10 @@ if [[ "$confirm" =~ ^[Nn] ]]; then
     exit 1
 fi
 
-# Update config.yml
-sed -i "" "s|^custom_metrics_bigquery_project:.*|custom_metrics_bigquery_project: \"${config[project]}\"|" "$CONFIG_FILE"
-sed -i "" "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[location]}\"|" "$CONFIG_FILE"
-sed -i "" "s|^custom_metrics_credentials_path:.*|custom_metrics_credentials_path: \"${config[credentials]}\"|" "$CONFIG_FILE"
-sed -i "" "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[interval]}\"|" "$CONFIG_FILE"
+# Update config.yml with proper file path
+sed -i '' "s|^custom_metrics_bigquery_project:.*|custom_metrics_bigquery_project: \"${config[project]}\"|" "$CONFIG_FILE"
+sed -i '' "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[location]}\"|" "$CONFIG_FILE"
+sed -i '' "s|^custom_metrics_credentials_path:.*|custom_metrics_credentials_path: \"${config[credentials]}\"|" "$CONFIG_FILE"
+sed -i '' "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[interval]}\"|" "$CONFIG_FILE"
 
 log "BigQuery configuration updated in $CONFIG_FILE." 
