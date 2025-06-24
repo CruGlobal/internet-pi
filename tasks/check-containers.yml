@@ -10,7 +10,6 @@
     - internet-monitoring-prometheus-1
     - internet-monitoring-ping-1
     - internet-monitoring-speedtest-1
-    - internet-monitoring-nodeexp-1
   register: container_info
 
 - name: Fail if any container is not healthy or not running

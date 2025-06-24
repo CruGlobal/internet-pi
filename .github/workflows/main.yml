@@ -155,7 +155,7 @@ jobs:
       - name: Ensure credentials.json exists
         run: |
           mkdir -p config
-          echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}' > config/credentials.json
+          echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}' > ./config/credentials.json
 
       - name: Check all containers are stable
         run: |

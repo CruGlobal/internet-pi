@@ -38,7 +38,7 @@ jobs:
 
       - name: add login data
         run: |
-          mkdir -p $HOME/config
+          mkdir -p $PWD/config
           echo '{
             "type": "service_account",
             "project_id": "test-project",
@@ -50,9 +50,9 @@ jobs:
             "token_uri": "https://oauth2.googleapis.com/token",
             "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
             "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/test@test-project.iam.gserviceaccount.com"
-          }' | sudo tee $HOME/config/credentials.json > /dev/null
+          }' | sudo tee $PWD/config/credentials.json > /dev/null
 
-          sudo ./config.sh login < <(printf "test-project\nus-central1\ny\n$HOME/config/credentials.json\n1h\ny\n")
+          sudo ./config.sh login < <(printf "test-project\nus-central1\ny\n$PWD/config/credentials.json\n1h\ny\n")
 
       - name: Run installer script
         run: sudo -E bash ./config.sh install
