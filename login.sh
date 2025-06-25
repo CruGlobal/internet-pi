@@ -116,9 +116,14 @@ else
 fi
 config[credentials]="$cred_path"
 
-echo "Current Collection Interval: ${config[interval]}"
-read -p "Enter collection interval (e.g., 1h) [${config[interval]}]: " input
-if [ -n "$input" ]; then config[interval]="$input"; fi
+# TODO allow users to customize this. default to 5 minutes
+# echo "Current Collection Interval: ${config[interval]}"
+# read -p "Enter collection interval (e.g., 1h) [${config[interval]}]: " input
+# if [ -n "$input" ]; then config[interval]="$input"; fi
+config[interval]="5m"  # Default to 5 minutes
+
+# Add tables configuration
+config[tables]="speed,ping"  # Default tables
 
 echo
 echo "Summary of BigQuery configuration to be saved:"
@@ -126,6 +131,7 @@ echo "  Project: ${config[project]}"
 echo "  Location: ${config[location]}"
 echo "  Credentials: ${config[credentials]}"
 echo "  Interval: ${config[interval]}"
+echo "  Tables: ${config[tables]}"
 read -p "Is this correct? [Y/n]: " confirm
 if [[ "$confirm" =~ ^[Nn] ]]; then
     echo "Aborting. No changes made."
@@ -137,5 +143,6 @@ sed -i "s|^custom_metrics_bigquery_project:.*|custom_metrics_bigquery_project: \
 sed -i "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[location]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_credentials_path:.*|custom_metrics_credentials_path: \"${config[credentials]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[interval]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_tables:.*|custom_metrics_tables: \"${config[tables]}\"|" "$CONFIG_FILE"
 
 log "BigQuery configuration updated in $CONFIG_FILE." 
