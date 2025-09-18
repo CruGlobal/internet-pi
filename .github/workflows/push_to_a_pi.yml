@@ -1,8 +1,6 @@
 name: Deploy to Raspberry Pi
 
 on:
-  push:
-    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -20,7 +18,7 @@ jobs:
           else
             echo "Python3 is already installed"
           fi
-          
+
           if ! command -v pip3 &> /dev/null; then
             sudo apt-get install -y python3-pip
           else
@@ -47,7 +45,7 @@ jobs:
             curl -fsSL https://get.docker.com -o get-docker.sh
             sudo sh get-docker.sh
           fi
-          
+
           # Check if Docker daemon is running
           if ! systemctl is-active --quiet docker; then
             sudo systemctl start docker || true
@@ -55,7 +53,7 @@ jobs:
           else
             echo "Docker daemon is already running"
           fi
-          
+
           # Check if user is in docker group
           if ! groups $USER | grep -q docker; then
             sudo usermod -aG docker $USER
@@ -64,7 +62,7 @@ jobs:
           else
             echo "User is already in docker group"
           fi
-          
+
           # Verify Docker is working
           docker info || true
 
