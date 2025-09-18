@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-REPO_OWNER="${REPO_OWNER:-roguisharcanetrickster}"
+REPO_OWNER="${REPO_OWNER:-CruGlobal}"
 REPO_NAME="${REPO_NAME:-internet-pi}"
 BRANCH="${BRANCH:-master}"
 # UPDATE_INTERVAL=3600  # Check every hour

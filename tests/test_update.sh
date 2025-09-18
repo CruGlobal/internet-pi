@@ -4,7 +4,7 @@ set -e
 echo "Basic update.sh test"
 
 # 1. Check that update.sh can contact the repo and get a commit hash
-REPO_OWNER="roguisharcanetrickster"
+REPO_OWNER="CruGlobal"
 REPO_NAME="internet-pi"
 BRANCH="master"
 

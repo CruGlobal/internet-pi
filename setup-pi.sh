@@ -4,7 +4,7 @@
 set -e
 
 # Configuration
-REPO_OWNER="roguisharcanetrickster"
+REPO_OWNER="CruGlobal"
 REPO_NAME="internet-pi"
 BRANCH="master"
 INSTALL_DIR="$PWD/internet-pi"

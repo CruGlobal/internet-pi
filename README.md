@@ -1,6 +1,6 @@
 # Internet Pi
 
-[![CI](https://github.com/roguisharcanetrickster/internet-pi/workflows/test/badge.svg?event=push)](https://github.com/roguisharcanetrickster/internet-pi/actions?query=workflow%3Atest)
+[![CI](https://github.com/CruGlobal/internet-pi/workflows/test/badge.svg?event=push)](https://github.com/CruGlobal/internet-pi/actions?query=workflow%3Atest)
 
 ---
 
@@ -14,7 +14,7 @@ sudo apt-get update && sudo apt-get install -y git
 # You can use any directory you like, e.g. $HOME/internet-pi
 cd $HOME
 
-git clone https://github.com/roguisharcanetrickster/internet-pi.git
+git clone https://github.com/CruGlobal/internet-pi.git
 cd internet-pi
 
 # Run the setup script
