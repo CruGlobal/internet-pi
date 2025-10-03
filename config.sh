@@ -133,9 +133,8 @@ case "$1" in
         # Check for required BigQuery config and credentials
         CONFIG_FILE="$CONFIG_DIR/config.yml"
         REQUIRED_KEYS=(
-            "custom_metrics_bigquery_project"
-            "custom_metrics_location"
-            "custom_metrics_credentials_path"
+            "custom_metrics_turso_db_url"
+            "custom_metrics_turso_auth_token"
             "custom_metrics_collection_interval"
         )
         MISSING_KEY=false
@@ -145,13 +144,8 @@ case "$1" in
                 break
             fi
         done
-        # Check credentials file
-        CRED_PATH=$(grep '^custom_metrics_credentials_path:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"')
-        if [ -z "$CRED_PATH" ]; then
-            CRED_PATH="$CONFIG_DIR/credentials.json"
-        fi
-        if [ "$MISSING_KEY" = true ] || [ ! -f "$CRED_PATH" ]; then
-            error "BigQuery configuration incomplete. Please run: ./config.sh login"
+        if [ "$MISSING_KEY" = true ]; then
+            error "Turso configuration incomplete. Please run: ./config.sh login"
             exit 1
         fi
         check_root
