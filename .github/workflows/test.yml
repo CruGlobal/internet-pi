@@ -36,23 +36,9 @@ jobs:
             sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
           sudo apt-get update
 
-      - name: add login data
+      - name: Add Turso login data
         run: |
-          mkdir -p $PWD/config
-          echo '{
-            "type": "service_account",
-            "project_id": "test-project",
-            "private_key_id": "test-key-id",
-            "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC9QFxMhxq7YgS0\n-----END PRIVATE KEY-----\n",
-            "client_email": "test@test-project.iam.gserviceaccount.com",
-            "client_id": "123456789",
-            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/test@test-project.iam.gserviceaccount.com"
-          }' | sudo tee $PWD/config/credentials.json > /dev/null
-
-          sudo ./config.sh login < <(printf "test-project\nus-central1\ny\n$PWD/config/credentials.json\n1h\ny\n")
+          sudo ./config.sh login < <(printf "libsql://test.turso.io\ntest-auth-token\n1h\ny\n")
 
       - name: Run installer script
         run: sudo -E bash ./config.sh install
@@ -67,30 +53,6 @@ jobs:
         run: |
           systemctl status internet-pi-updater.service || true
           systemctl status internet-pi-updater.timer || true
-
-      - name: Simulate missing BigQuery config
-        run: |
-          rm -f $HOME/config/credentials.json || true
-          sed -i '/^custom_metrics_bigquery_project:/d' $HOME/config.yml || true
-          sed -i '/^custom_metrics_location:/d' $HOME/config.yml || true
-          sed -i '/^custom_metrics_credentials_path:/d' $HOME/config.yml || true
-          sed -i '/^custom_metrics_collection_interval:/d' $HOME/config.yml || true
-
-      - name: Check install fails with missing BigQuery config
-        run: |
-          set +e
-          sudo -E ./config.sh install
-          if [ $? -eq 0 ]; then
-            echo "Install should have failed due to missing BigQuery config, but it succeeded!" >&2
-            exit 1
-          fi
-          set -e
-
-      - name: Run login to fix BigQuery config
-        run: |
-          echo '{"type": "service_account", "project_id": "test", "private_key_id": "test", "private_key": "-----BEGIN PRIVATE KEY-----\\nMIIEv...\\n-----END PRIVATE KEY-----\\n", "client_email": "test@test.iam.gserviceaccount.com", "client_id": "test", "auth_uri": "https://accounts.google.com/o/oauth2/auth", "token_uri": "https://oauth2.googleapis.com/token", "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs", "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/test@test.iam.gserviceaccount.com"}' > $HOME/credentials.json
-          export HOME=$HOME
-          yes "test-value" | sudo -E bash ./login.sh < <(echo -e "test-project\ntest-location\n$HOME/credentials.json\n1h\nY")
 
       - name: Check install succeeds after login
         run: sudo -E ./config.sh install
