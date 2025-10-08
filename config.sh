@@ -137,6 +137,7 @@ case "$1" in
             "custom_metrics_turso_auth_token"
             "custom_metrics_location"
             "custom_metrics_collection_interval"
+            "custom_metrics_sync_interval"
         )
         MISSING_KEY=false
         for key in "${REQUIRED_KEYS[@]}"; do
