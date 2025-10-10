@@ -1,0 +1,12 @@
+all:
+  children:
+    internet_pi:
+      hosts:
+        4piC:
+          ansible_host: 192.168.1.138
+          ansible_user: scry
+          ansible_ssh_private_key_file: ~/.ssh/id_ed_v3
+        pi4N:
+          ansible_host: 192.168.1.136
+          ansible_user: scry
+          ansible_ssh_private_key_file: ~/.ssh/id_ed_v3

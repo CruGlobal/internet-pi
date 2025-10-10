@@ -138,6 +138,7 @@ services:
       - TURSO_AUTH_TOKEN={{ custom_metrics_turso_auth_token }}
       - PROMETHEUS_URL=http://prometheus:9090
       - COLLECTION_INTERVAL={{ custom_metrics_collection_interval }}
+      - LOCATION={{ custom_metrics_location }}
       - SYNC_INTERVAL={{ custom_metrics_sync_interval }}
     networks:
       - back-tier

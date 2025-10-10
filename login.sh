@@ -47,6 +47,7 @@ config[auth_token]=$(grep '^custom_metrics_turso_auth_token:' "$CONFIG_FILE" | a
 config[location]=$(grep '^custom_metrics_location:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[collection_interval]=$(grep '^custom_metrics_collection_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/#.*$//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[sync_interval]=$(grep '^custom_metrics_sync_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/#.*$//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[custom_metrics_location]=$(grep '^custom_metrics_location:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/#.*$//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[tables]=$(grep '^custom_metrics_tables:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 # Debug output
