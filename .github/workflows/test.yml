@@ -38,7 +38,7 @@ jobs:
 
       - name: Add Turso login data
         run: |
-          sudo ./config.sh login < <(printf "libsql://test.turso.io\ntest-auth-token\n1h\ny\n")
+          sudo ./config.sh login < <(printf "libsql://test.turso.io\ntest-auth-token\ntest-location\n1h\n1444\nspeed,ping\ny\n")
 
       - name: Run installer script
         run: sudo -E bash ./config.sh install

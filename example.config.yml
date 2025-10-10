@@ -37,6 +37,7 @@ custom_metrics_enable: true
 custom_metrics_turso_db_url: "libsql://your-database-url.turso.io"
 custom_metrics_turso_auth_token: "your-auth-token"
 custom_metrics_prometheus_url: "http://prometheus:9090"
+custom_metrics_location: "home" # e.g., "home", "office", "remote"
 custom_metrics_collection_interval: "5min"  # collection interval
 custom_metrics_sync_interval: "1444"
 
