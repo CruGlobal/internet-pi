@@ -32,6 +32,7 @@
     src: templates/{{ item.src }}
     dest: "{{ config_dir }}/internet-monitoring/{{ item.dest }}"
     mode: 0644
+    force: true # Ensure the file is always overwritten
   loop:
     - src: docker-compose.yml.j2
       dest: docker-compose.yml
