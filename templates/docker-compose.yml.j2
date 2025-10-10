@@ -127,7 +127,8 @@ services:
 
 {% if custom_metrics_enable %}
   custom-metrics:
-    image: digiserve/custom-metrics:master
+    image: digiserve/custom-metrics:latest
+    pull_policy: always
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
