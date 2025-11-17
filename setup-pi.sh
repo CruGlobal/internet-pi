@@ -10,6 +10,9 @@ BRANCH="master"
 INSTALL_DIR="/scry-pi"
 BACKUP_DIR="$INSTALL_DIR.backup"
 
+# Determine the user running the script
+RUNNER_USER=$(whoami)
+
 # Color codes for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -57,6 +60,16 @@ else
     # Create installation directory
     mkdir -p "$INSTALL_DIR"
 fi
+
+# Set ownership and permissions for the install directory
+log "Setting ownership and permissions for $INSTALL_DIR..."
+chown -R "$RUNNER_USER":"$RUNNER_USER" "$INSTALL_DIR"
+chmod -R 0755 "$INSTALL_DIR"
+
+# Copy secrets/keys/config from working directory to the new location
+log "Copying config.yml and pi_remote_hosts to $INSTALL_DIR..."
+cp ../config.yml "$INSTALL_DIR/config.yml" || true
+cp ../pi_remote_hosts "$INSTALL_DIR/pi_remote_hosts" || true
 
 # Clone/update the repository
 if [ ! -d "$INSTALL_DIR/.git" ]; then
