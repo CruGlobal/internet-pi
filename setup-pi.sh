@@ -7,8 +7,8 @@ set -e
 REPO_OWNER="CruGlobal"
 REPO_NAME="internet-pi"
 BRANCH="master"
-INSTALL_DIR="$PWD/internet-pi"
-BACKUP_DIR="$PWD/internet-pi.backup"
+INSTALL_DIR="/scry-pi"
+BACKUP_DIR="$INSTALL_DIR.backup"
 
 # Color codes for output
 GREEN='\033[0;32m'
@@ -94,6 +94,9 @@ chmod +x /usr/local/bin/update-internet-pi
 # Copy the systemd service
 cp "$INSTALL_DIR/internet-pi-updater.service" /etc/systemd/system/
 
+# Determine the user running the script
+RUNNER_USER=$(whoami)
+
 # Insert or replace ExecStart in the service file with the correct path
 SERVICE_FILE="/etc/systemd/system/internet-pi-updater.service"
 EXEC_PATH="/usr/local/bin/update-internet-pi"
@@ -112,6 +115,14 @@ if grep -q '^WorkingDirectory=' "$SERVICE_FILE"; then
 else
     # Insert WorkingDirectory after [Service] section header
     sed -i "/^\[Service\]/a WorkingDirectory=$REPO_ROOT" "$SERVICE_FILE"
+fi
+
+# Insert or replace User in the service file
+if grep -q '^User=' "$SERVICE_FILE"; then
+    sed -i "s|^User=.*$|User=$RUNNER_USER|" "$SERVICE_FILE"
+else
+    # Insert User after [Service] section header
+    sed -i "/^\[Service\]/a User=$RUNNER_USER" "$SERVICE_FILE"
 fi
 
 # Reload systemd
