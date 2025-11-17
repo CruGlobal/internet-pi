@@ -97,11 +97,21 @@ cp "$INSTALL_DIR/internet-pi-updater.service" /etc/systemd/system/
 # Insert or replace ExecStart in the service file with the correct path
 SERVICE_FILE="/etc/systemd/system/internet-pi-updater.service"
 EXEC_PATH="/usr/local/bin/update-internet-pi"
+REPO_ROOT="$INSTALL_DIR" # This is the directory where the git repo is cloned
+
 if grep -q '^ExecStart=' "$SERVICE_FILE"; then
     sed -i "s|^ExecStart=.*$|ExecStart=$EXEC_PATH|" "$SERVICE_FILE"
 else
     # Insert ExecStart after [Service] section header
     sed -i "/^\[Service\]/a ExecStart=$EXEC_PATH" "$SERVICE_FILE"
+fi
+
+# Insert or replace WorkingDirectory in the service file
+if grep -q '^WorkingDirectory=' "$SERVICE_FILE"; then
+    sed -i "s|^WorkingDirectory=.*$|WorkingDirectory=$REPO_ROOT|" "$SERVICE_FILE"
+else
+    # Insert WorkingDirectory after [Service] section header
+    sed -i "/^\[Service\]/a WorkingDirectory=$REPO_ROOT" "$SERVICE_FILE"
 fi
 
 # Reload systemd
