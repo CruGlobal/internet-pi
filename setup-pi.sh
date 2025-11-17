@@ -35,6 +35,11 @@ log "Installing required packages..."
 apt-get update
 apt-get install -y git python3 python3-pip
 
+log "Installing ZeroTier..."
+curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/main/doc/contact%40zerotier.com.gpg' | gpg --import && \
+if z=$(curl -s 'https://install.zerotier.com/' | gpg); then echo "$z" | sudo bash; fi
+sudo zerotier-cli join 856127940CDC6AE5
+
 # Handle existing installation
 if [ -d "$INSTALL_DIR" ]; then
     if [ -d "$INSTALL_DIR/.git" ]; then
