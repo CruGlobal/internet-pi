@@ -33,6 +33,12 @@ if [ ! -f "$CONFIG_FILE" ]; then
         sed -i 's|^custom_metrics_turso_db_url: ".*"|custom_metrics_turso_db_url: ""|' "$CONFIG_FILE"
         sed -i 's|^custom_metrics_turso_auth_token: ".*"|custom_metrics_turso_auth_token: ""|' "$CONFIG_FILE"
         sed -i 's/^custom_metrics_collection_interval: ".*"/custom_metrics_collection_interval: ""/' "$CONFIG_FILE"
+        sed -i 's|^custom_metrics_pghost: ".*"|custom_metrics_pghost: ""|' "$CONFIG_FILE"
+        sed -i 's|^custom_metrics_pgdatabase: ".*"|custom_metrics_pgdatabase: ""|' "$CONFIG_FILE"
+        sed -i 's|^custom_metrics_pguser: ".*"|custom_metrics_pguser: ""|' "$CONFIG_FILE"
+        sed -i 's|^custom_metrics_pgpassword: ".*"|custom_metrics_pgpassword: ""|' "$CONFIG_FILE"
+        sed -i 's|^custom_metrics_pgsslmode: ".*"|custom_metrics_pgsslmode: ""|' "$CONFIG_FILE"
+        sed -i 's|^custom_metrics_pgchannelbinding: ".*"|custom_metrics_pgchannelbinding: ""|' "$CONFIG_FILE"
     else
         error "config.yml not found at $CONFIG_FILE and example.config.yml not found in $CONFIG_DIR. Please ensure one exists."
         exit 1
@@ -58,6 +64,20 @@ echo "Location: '${config[location]}'"
 echo "Collection Interval: '${config[collection_interval]}'"
 echo "Sync Interval: '${config[sync_interval]}'"
 echo "Tables: '${config[tables]}'"
+
+config[pghost]=$(grep '^custom_metrics_pghost:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[pgdatabase]=$(grep '^custom_metrics_pgdatabase:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[pguser]=$(grep '^custom_metrics_pguser:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[pgpassword]=$(grep '^custom_metrics_pgpassword:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[pgsslmode]=$(grep '^custom_metrics_pgsslmode:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+config[pgchannelbinding]=$(grep '^custom_metrics_pgchannelbinding:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+echo "PGHOST: '${config[pghost]}'"
+echo "PGDATABASE: '${config[pgdatabase]}'"
+echo "PGUSER: '${config[pguser]}'"
+echo "PGPASSWORD: '${config[pgpassword]}'"
+echo "PGSSLMODE: '${config[pgsslmode]}'"
+echo "PGCHANNELBINDING: '${config[pgchannelbinding]}'"
 echo
 
 # Prompt for each value
@@ -89,6 +109,33 @@ read -p "Enter Tables (comma-separated, e.g., speed,ping) [${config[tables]}]: "
 if [ -n "$input" ]; then config[tables]="$input"; else config[tables]="speed,ping"; fi # Default if blank
 
 echo
+echo "PostgreSQL Configuration (leave blank to keep current value)"
+echo "----------------------------------------------------------"
+echo "Current PGHOST: ${config[pghost]}"
+read -p "Enter PGHOST [${config[pghost]}]: " input
+if [ -n "$input" ]; then config[pghost]="$input"; fi
+
+echo "Current PGDATABASE: ${config[pgdatabase]}"
+read -p "Enter PGDATABASE [${config[pgdatabase]}]: " input
+if [ -n "$input" ]; then config[pgdatabase]="$input"; fi
+
+echo "Current PGUSER: ${config[pguser]}"
+read -p "Enter PGUSER [${config[pguser]}]: " input
+if [ -n "$input" ]; then config[pguser]="$input"; fi
+
+echo "Current PGPASSWORD: ${config[pgpassword]}"
+read -p "Enter PGPASSWORD [${config[pgpassword]}]: " input
+if [ -n "$input" ]; then config[pgpassword]="$input"; fi
+
+echo "Current PGSSLMODE: ${config[pgsslmode]}"
+read -p "Enter PGSSLMODE [${config[pgsslmode]}]: " input
+if [ -n "$input" ]; then config[pgsslmode]="$input"; fi
+
+echo "Current PGCHANNELBINDING: ${config[pgchannelbinding]}"
+read -p "Enter PGCHANNELBINDING [${config[pgchannelbinding]}]: " input
+if [ -n "$input" ]; then config[pgchannelbinding]="$input"; fi
+
+echo
 echo "Summary of Turso configuration to be saved:"
 echo "  DB URL: ${config[db_url]}"
 echo "  Auth Token: ${config[auth_token]}"
@@ -96,6 +143,12 @@ echo "  Location: ${config[location]}"
 echo "  Collection Interval: ${config[collection_interval]}"
 echo "  Sync Interval: ${config[sync_interval]}"
 echo "  Tables: ${config[tables]}"
+echo "  PGHOST: ${config[pghost]}"
+echo "  PGDATABASE: ${config[pgdatabase]}"
+echo "  PGUSER: ${config[pguser]}"
+echo "  PGPASSWORD: ${config[pgpassword]}"
+echo "  PGSSLMODE: ${config[pgsslmode]}"
+echo "  PGCHANNELBINDING: ${config[pgchannelbinding]}"
 read -p "Is this correct? [Y/n]: " confirm
 if [[ "$confirm" =~ ^[Nn] ]]; then
     echo "Aborting. No changes made."
@@ -109,5 +162,12 @@ sed -i "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[locati
 sed -i "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[collection_interval]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_sync_interval:.*|custom_metrics_sync_interval: \"${config[sync_interval]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_tables:.*|custom_metrics_tables: \"${config[tables]}\"|" "$CONFIG_FILE"
+
+sed -i "s|^custom_metrics_pghost:.*|custom_metrics_pghost: \"${config[pghost]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_pgdatabase:.*|custom_metrics_pgdatabase: \"${config[pgdatabase]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_pguser:.*|custom_metrics_pguser: \"${config[pguser]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_pgpassword:.*|custom_metrics_pgpassword: \"${config[pgpassword]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_pgsslmode:.*|custom_metrics_pgsslmode: \"${config[pgsslmode]}\"|" "$CONFIG_FILE"
+sed -i "s|^custom_metrics_pgchannelbinding:.*|custom_metrics_pgchannelbinding: \"${config[pgchannelbinding]}\"|" "$CONFIG_FILE"
 
 log "Turso configuration updated in $CONFIG_FILE."
