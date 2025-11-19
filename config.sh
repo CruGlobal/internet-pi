@@ -140,7 +140,6 @@ case "$1" in
             "custom_metrics_pgsslmode"
             "custom_metrics_pgchannelbinding"
             "custom_metrics_collection_interval"
-            "custom_metrics_sync_interval"
         )
         MISSING_KEY=false
         for key in "${REQUIRED_KEYS[@]}"; do

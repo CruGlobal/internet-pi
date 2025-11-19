@@ -138,7 +138,7 @@ services:
       - PROMETHEUS_URL=http://prometheus:9090
       - COLLECTION_INTERVAL={{ custom_metrics_collection_interval }}
       - LOCATION={{ custom_metrics_location }}
-      - SYNC_INTERVAL={{ custom_metrics_sync_interval }}
+      - UPDATE_INTERVAL={{ custom_metrics_update_interval }}
       - PGHOST={{custom_metrics_pghost}}
       - PGDATABASE={{custom_metrics_pgdatabase}}
       - PGUSER={{custom_metrics_pguser}}
