@@ -1,6 +1,6 @@
 ---
 # Location where configuration files will be stored.
-config_dir: '~'
+config_dir: '/scry-pi'
 
 # Domain names configuration (related services need to be enabled).
 domain_name_enable: false
