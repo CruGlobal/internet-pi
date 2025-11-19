@@ -104,10 +104,6 @@ echo "Current Sync Interval: ${config[sync_interval]}"
 read -p "Enter Sync Interval (e.g., 1444) [${config[sync_interval]}]: " input
 if [ -n "$input" ]; then config[sync_interval]="$input"; fi
 
-echo "Current Tables: ${config[tables]}"
-read -p "Enter Tables (comma-separated, e.g., speed,ping) [${config[tables]}]: " input
-if [ -n "$input" ]; then config[tables]="$input"; else config[tables]="speed,ping"; fi # Default if blank
-
 echo
 echo "PostgreSQL Configuration (leave blank to keep current value)"
 echo "----------------------------------------------------------"
@@ -161,7 +157,6 @@ sed -i "s|^custom_metrics_turso_auth_token:.*|custom_metrics_turso_auth_token: \
 sed -i "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[location]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[collection_interval]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_sync_interval:.*|custom_metrics_sync_interval: \"${config[sync_interval]}\"|" "$CONFIG_FILE"
-sed -i "s|^custom_metrics_tables:.*|custom_metrics_tables: \"${config[tables]}\"|" "$CONFIG_FILE"
 
 sed -i "s|^custom_metrics_pghost:.*|custom_metrics_pghost: \"${config[pghost]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_pgdatabase:.*|custom_metrics_pgdatabase: \"${config[pgdatabase]}\"|" "$CONFIG_FILE"

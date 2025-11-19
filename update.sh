@@ -44,21 +44,32 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     git fetch origin
     git reset --hard "origin/$BRANCH"
     
-    # Run the deployment
-    log "Running deployment..."
-    ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
+    # # Run the deployment
+    # log "Running deployment..."
+    # ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
     
-    # Check if deployment was successful
-    if [ $? -eq 0 ]; then
-        log "Deployment completed successfully"
-    else
-        log "Deployment failed"
-        rm -f "$LOCK_FILE"
-        exit 1
-    fi
+    # # Check if deployment was successful
+    # if [ $? -eq 0 ]; then
+    #     log "Deployment completed successfully"
+    # else
+    #     log "Deployment failed"
+    #     rm -f "$LOCK_FILE"
+    #     exit 1
+    # fi
 else
     log "No updates available"
 fi
+# Run the deployment
+log "Running deployment..."
+~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
 
+# Check if deployment was successful
+if [ $? -eq 0 ]; then
+    log "Deployment completed successfully"
+else
+    log "Deployment failed"
+    rm -f "$LOCK_FILE"
+    exit 1
+fi
 # Remove lock file
 rm -f "$LOCK_FILE" 
