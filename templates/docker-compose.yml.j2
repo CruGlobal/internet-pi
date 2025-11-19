@@ -139,12 +139,12 @@ services:
       - COLLECTION_INTERVAL={{ custom_metrics_collection_interval }}
       - LOCATION={{ custom_metrics_location }}
       - SYNC_INTERVAL={{ custom_metrics_sync_interval }}
-      - PGHOST=${custom_metrics_pghost}
-      - PGDATABASE=${custom_metrics_pgdatabase}
-      - PGUSER=${custom_metrics_pguser}
-      - PGPASSWORD=${custom_metrics_pgpassword}
-      - PGSSLMODE=${custom_metrics_pgsslmode}
-      - PGCHANNELBINDING=${custom_metrics_pgchannelbinding}
+      - PGHOST={{custom_metrics_pghost}}
+      - PGDATABASE={{custom_metrics_pgdatabase}}
+      - PGUSER={{custom_metrics_pguser}}
+      - PGPASSWORD={{custom_metrics_pgpassword}}
+      - PGSSLMODE={{custom_metrics_pgsslmode}}
+      - PGCHANNELBINDING={{custom_metrics_pgchannelbinding}}
     networks:
       - back-tier
     depends_on:
