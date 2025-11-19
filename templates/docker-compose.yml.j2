@@ -135,8 +135,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./config:/config
     environment:
-      - TURSO_DATABASE_URL={{ custom_metrics_turso_db_url }}
-      - TURSO_AUTH_TOKEN={{ custom_metrics_turso_auth_token }}
       - PROMETHEUS_URL=http://prometheus:9090
       - COLLECTION_INTERVAL={{ custom_metrics_collection_interval }}
       - LOCATION={{ custom_metrics_location }}

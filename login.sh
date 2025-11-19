@@ -30,8 +30,6 @@ if [ ! -f "$CONFIG_FILE" ]; then
         cp "$CONFIG_DIR/example.config.yml" "$CONFIG_FILE"
         log "Created $CONFIG_FILE from example.config.yml."
         # Clean up default example values - Linux compatible sed
-        sed -i 's|^custom_metrics_turso_db_url: ".*"|custom_metrics_turso_db_url: ""|' "$CONFIG_FILE"
-        sed -i 's|^custom_metrics_turso_auth_token: ".*"|custom_metrics_turso_auth_token: ""|' "$CONFIG_FILE"
         sed -i 's/^custom_metrics_collection_interval: ".*"/custom_metrics_collection_interval: ""/' "$CONFIG_FILE"
         sed -i 's|^custom_metrics_pghost: ".*"|custom_metrics_pghost: ""|' "$CONFIG_FILE"
         sed -i 's|^custom_metrics_pgdatabase: ".*"|custom_metrics_pgdatabase: ""|' "$CONFIG_FILE"
@@ -48,8 +46,6 @@ fi
 # Read current values
 declare -A config
 log "Reading current configuration..."
-config[db_url]=$(grep '^custom_metrics_turso_db_url:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-config[auth_token]=$(grep '^custom_metrics_turso_auth_token:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[location]=$(grep '^custom_metrics_location:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[collection_interval]=$(grep '^custom_metrics_collection_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/#.*$//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[sync_interval]=$(grep '^custom_metrics_sync_interval:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/#.*$//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
@@ -58,8 +54,6 @@ config[tables]=$(grep '^custom_metrics_tables:' "$CONFIG_FILE" | awk -F': ' '{pr
 
 # Debug output
 log "Current configuration values:"
-echo "Turso DB URL: '${config[db_url]}'"
-echo "Turso Auth Token: '${config[auth_token]}'"
 echo "Location: '${config[location]}'"
 echo "Collection Interval: '${config[collection_interval]}'"
 echo "Sync Interval: '${config[sync_interval]}'"
@@ -82,15 +76,6 @@ echo
 
 # Prompt for each value
 echo
-echo "Turso Configuration (leave blank to keep current value)"
-echo "--------------------------------------------------------"
-echo "Current Turso DB URL: ${config[db_url]}"
-read -p "Enter Turso Database URL [${config[db_url]}]: " input
-if [ -n "$input" ]; then config[db_url]="$input"; fi
-
-echo "Current Turso Auth Token: ${config[auth_token]}"
-read -p "Enter Turso Auth Token [${config[auth_token]}]: " input
-if [ -n "$input" ]; then config[auth_token]="$input"; fi
 
 echo "Current Location: ${config[location]}"
 read -p "Enter Location (e.g., home, office, remote) [${config[location]}]: " input
@@ -132,9 +117,7 @@ read -p "Enter PGCHANNELBINDING [${config[pgchannelbinding]}]: " input
 if [ -n "$input" ]; then config[pgchannelbinding]="$input"; fi
 
 echo
-echo "Summary of Turso configuration to be saved:"
-echo "  DB URL: ${config[db_url]}"
-echo "  Auth Token: ${config[auth_token]}"
+echo "Summary of PostgreSQL configuration to be saved:"
 echo "  Location: ${config[location]}"
 echo "  Collection Interval: ${config[collection_interval]}"
 echo "  Sync Interval: ${config[sync_interval]}"
@@ -152,8 +135,6 @@ if [[ "$confirm" =~ ^[Nn] ]]; then
 fi
 
 # Update config.yml with proper file path - Linux compatible sed
-sed -i "s|^custom_metrics_turso_db_url:.*|custom_metrics_turso_db_url: \"${config[db_url]}\"|" "$CONFIG_FILE"
-sed -i "s|^custom_metrics_turso_auth_token:.*|custom_metrics_turso_auth_token: \"${config[auth_token]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_location:.*|custom_metrics_location: \"${config[location]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_collection_interval:.*|custom_metrics_collection_interval: \"${config[collection_interval]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_sync_interval:.*|custom_metrics_sync_interval: \"${config[sync_interval]}\"|" "$CONFIG_FILE"
@@ -165,4 +146,4 @@ sed -i "s|^custom_metrics_pgpassword:.*|custom_metrics_pgpassword: \"${config[pg
 sed -i "s|^custom_metrics_pgsslmode:.*|custom_metrics_pgsslmode: \"${config[pgsslmode]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_pgchannelbinding:.*|custom_metrics_pgchannelbinding: \"${config[pgchannelbinding]}\"|" "$CONFIG_FILE"
 
-log "Turso configuration updated in $CONFIG_FILE."
+log "PostgreSQL configuration updated in $CONFIG_FILE."

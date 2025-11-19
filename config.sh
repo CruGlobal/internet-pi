@@ -130,12 +130,15 @@ case "$1" in
         bash "$INSTALL_DIR/login.sh"
         ;;
     "install")
-        # Check for required BigQuery config and credentials
+        # Check for required postgress config and credentials
         CONFIG_FILE="$CONFIG_DIR/config.yml"
-        REQUIRED_KEYS=(
-            "custom_metrics_turso_db_url"
-            "custom_metrics_turso_auth_token"
-            "custom_metrics_location"
+        REQUIRED_KEYS=(            "custom_metrics_location"
+            "custom_metrics_pghost"
+            "custom_metrics_pgdatabase"
+            "custom_metrics_pguser"
+            "custom_metrics_pgpassword"
+            "custom_metrics_pgsslmode"
+            "custom_metrics_pgchannelbinding"
             "custom_metrics_collection_interval"
             "custom_metrics_sync_interval"
         )
@@ -147,7 +150,7 @@ case "$1" in
             fi
         done
         if [ "$MISSING_KEY" = true ]; then
-            error "Turso configuration incomplete. Please run: ./config.sh login"
+            error "Database configuration incomplete. Please run: ./config.sh login"
             exit 1
         fi
         check_root
