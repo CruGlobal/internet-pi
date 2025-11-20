@@ -1,0 +1,12 @@
+---
+- name: Configure DNS servers
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: '^nameserver'
+    line: 'nameserver 1.1.1.1'
+    create: yes
+
+- name: Add secondary DNS server
+  lineinfile:
+    path: /etc/resolv.conf
+    line: 'nameserver 1.0.0.1'

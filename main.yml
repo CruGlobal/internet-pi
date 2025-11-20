@@ -43,6 +43,9 @@
     - name: Setup User.
       ansible.builtin.import_tasks: tasks/user.yml
 
+    - name: Configure DNS.
+      ansible.builtin.import_tasks: tasks/dns.yml
+
     - name: Setup Docker.
       ansible.builtin.import_tasks: tasks/docker.yml
 
