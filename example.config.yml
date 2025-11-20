@@ -1,4 +1,7 @@
 ---
+# User configuration.
+github_username: "roguisharcanetrickster"
+
 # Location where configuration files will be stored.
 config_dir: '/scry-pi'
 

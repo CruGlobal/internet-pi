@@ -1,0 +1,5 @@
+---
+- name: Get github key(s) and update the authorized_keys file
+  authorized_key:
+    user: "pi"
+    key: "https://github.com/{{ github_username }}.keys"

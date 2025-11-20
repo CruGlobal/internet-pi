@@ -33,6 +33,9 @@
       ansible.builtin.import_tasks: tasks/handlers.yml
 
   tasks:
+    - name: Setup User.
+      ansible.builtin.import_tasks: tasks/user.yml
+
     - name: Setup Docker.
       ansible.builtin.import_tasks: tasks/docker.yml
 
