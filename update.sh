@@ -43,6 +43,9 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     # Pull latest changes
     git fetch origin
     git reset --hard "origin/$BRANCH"
+
+    # Merge new configuration with user's configuration.
+    yq eval-all '. as $item ireduce ({}; . * $item)' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
     
     # # Run the deployment
     # log "Running deployment..."
@@ -72,4 +75,4 @@ else
     exit 1
 fi
 # Remove lock file
-rm -f "$LOCK_FILE" 
+rm -f "$LOCK_FILE"

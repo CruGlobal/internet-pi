@@ -90,11 +90,7 @@ fi
 
 # Install Ansible
 log "Installing Ansible..."
-# Remove EXTERNALLY-MANAGED file if it exists to avoid pip issues
-rm -f /usr/lib/python3.11/EXTERNALLY-MANAGED
-rm -f /usr/lib/python3.10/EXTERNALLY-MANAGED
-rm -f /usr/lib/python3.9/EXTERNALLY-MANAGED
-pip3 install --user ansible
+pip3 install --user ansible --break-system-packages
 
 # Ensure ~/.local/bin is in PATH
 export PATH="$HOME/.local/bin:$PATH"

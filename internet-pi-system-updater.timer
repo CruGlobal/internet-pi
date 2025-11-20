@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for Internet Pi System Auto Updater
+
+[Timer]
+OnCalendar=weekly
+Unit=internet-pi-system-updater.service
+
+[Install]
+WantedBy=timers.target

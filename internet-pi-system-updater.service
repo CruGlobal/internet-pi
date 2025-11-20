@@ -1,0 +1,11 @@
+[Unit]
+Description=Internet Pi System Auto Updater
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/bin/bash /home/pi/internet-pi/update_system.sh
+
+[Install]
+WantedBy=multi-user.target
