@@ -16,12 +16,22 @@ log() {
 
 # Check if another update is running
 if [ -f "$LOCK_FILE" ]; then
-    log "Update already in progress, exiting"
-    exit 1
+    # Check if the process is still running
+    PID=$(cat "$LOCK_FILE")
+    if [ -n "$PID" ] && ps -p "$PID" > /dev/null; then
+        log "Update already in progress with PID $PID, exiting"
+        exit 1
+    else
+        log "Found stale lock file, removing"
+        rm -f "$LOCK_FILE"
+    fi
 fi
 
-# Create lock file
-touch "$LOCK_FILE"
+# Create lock file with current PID
+echo $$ > "$LOCK_FILE"
+
+# Ensure lock file is removed on exit
+trap 'rm -f "$LOCK_FILE"' EXIT
 
 
 # Get the latest commit hash from GitHub
