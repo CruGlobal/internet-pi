@@ -2,4 +2,16 @@
 - name: Get github key(s) and update the authorized_keys file
   authorized_key:
     user: "pi"
-    key: "https://github.com/{{ github_username }}.keys"
+    key: "https://github.com/{{ item }}.keys"
+    state: present
+  loop: "{{ github_username }}"
+
+- name: Allow 'pi' user to have passwordless sudo.
+  become: true
+  lineinfile:
+    path: /etc/sudoers.d/010_pi-nopasswd
+    line: "pi ALL=(ALL) NOPASSWD: ALL"
+    create: yes
+    validate: "visudo -cf %s"
+    state: present
+    mode: 0440
