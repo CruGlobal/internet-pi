@@ -3,7 +3,7 @@
 # Exit on error
 set -e
 
-CONFIG_DIR="./scry-pi"
+CONFIG_DIR="/scry-pi"
 CONFIG_FILE="$CONFIG_DIR/config.yml"
 
 # Color codes

@@ -16,10 +16,13 @@ cd $HOME
 
 git clone https://github.com/CruGlobal/internet-pi.git
 cd internet-pi
+chmod +x ./setup-pi.sh ./login.sh
+
+# Log in
+./login
 
 # Run the setup script
-chmod +x ./setup-pi.sh
-./setup-pi.sh
+sudo ./setup-pi.sh
 ```
 
 This will:
@@ -43,25 +46,28 @@ So that's what this is.
 
 ## Custom Metrics Service
 
-The Custom Metrics service collects network metrics from Prometheus and stores them in Turso for long-term analysis and visualization.
+The Custom Metrics service collects network metrics from Prometheus and stores them in PostgreSQL for long-term analysis and visualization.
 
 ### Prerequisites
 
-1.  A Turso database.
-2.  A Turso database URL and an authentication token.
+1.  A PostgreSQL database.
+2.  PostgreSQL database connection details (host, database name, user, and password).
 
 ### Setup
 
-1.  Create a Turso database and obtain its URL and an authentication token.
-    *   You can find instructions on how to do this in the [Turso documentation](https://docs.turso.tech/).
+1.  Create a PostgreSQL database and obtain its connection details.
 
-2.  Update your `config.yml` with the Turso details:
+2.  Update your `config.yml` with the PostgreSQL details:
     ```yaml
     custom_metrics_enable: true
-    custom_metrics_turso_db_url: "libsql://your-database-url.turso.io"
-    custom_metrics_turso_auth_token: "your-auth-token"
     custom_metrics_prometheus_url: "http://prometheus:9090"
-    custom_metrics_collection_interval: "1h"
+    custom_metrics_collection_interval: "5"
+    custom_metrics_use_postgres: "true"
+    custom_metrics_pghost: "your-postgres-host"
+    custom_metrics_pgdatabase: "your-postgres-database"
+    custom_metrics_pguser: "your-postgres-user"
+    custom_metrics_pgpassword: "your-postgres-password"
+    custom_metrics_pgsslmode: "require"
     ```
 
 3.  Run the playbook:
@@ -69,12 +75,12 @@ The Custom Metrics service collects network metrics from Prometheus and stores t
     ansible-playbook main.yml
     ```
 
-To setup the turso table:
+To setup the PostgreSQL table:
 ```
 
 This CLI command setup the tables:
 ```
- turso db shell <name-of-your-scrypi-database> "CREATE TABLE ping (site_id TEXT NOT NULL, timestamp TEXT NOT NULL, location TEXT, google_up REAL DEFAULT 0, apple_up REAL DEFAULT 0, github_up REAL DEFAULT 0, pihole_up REAL DEFAULT 0, node_up REAL DEFAULT 0, speedtest_up REAL DEFAULT 0, http_latency REAL, http_samples REAL, http_time REAL, http_content_length REAL, http_duration REAL, PRIMARY KEY (site_id, timestamp)); CREATE TABLE speed (site_id TEXT NOT NULL, timestamp TEXT NOT NULL, location TEXT, download_mbps REAL, upload_mbps REAL, ping_ms REAL, jitter_ms REAL, PRIMARY KEY (site_id, timestamp));"
+PGPASSWORD="your-postgres-password" psql -h "your-postgres-host" -U "your-postgres-user" -d "your-postgres-database" -c "CREATE TABLE ping (site_id TEXT NOT NULL, timestamp TEXT NOT NULL, location TEXT, google_up REAL DEFAULT 0, apple_up REAL DEFAULT 0, github_up REAL DEFAULT 0, pihole_up REAL DEFAULT 0, node_up REAL DEFAULT 0, speedtest_up REAL DEFAULT 0, http_latency REAL, http_samples REAL, http_time REAL, http_content_length REAL, http_duration REAL, PRIMARY KEY (site_id, timestamp)); CREATE TABLE speed (site_id TEXT NOT NULL, timestamp TEXT NOT NULL, location TEXT, download_mbps REAL, upload_mbps REAL, ping_ms REAL, jitter_ms REAL, PRIMARY KEY (site_id, timestamp));"
 ```
 
 ### Metrics Collected
@@ -84,7 +90,7 @@ The service collects the following metrics from Prometheus:
 - `speedtest_upload_bits_per_second`
 - `speedtest_ping_latency_milliseconds`
 
-These metrics are stored in Turso for long-term analysis.
+These metrics are stored in PostgreSQL for long-term analysis.
 
 **Internet Monitoring**: Installs Prometheus and Grafana, along with a few Docker containers to monitor your Internet connection with Speedtest.net speedtests and HTTP tests so you can see uptime, ping stats, and speedtest results over time.
 
