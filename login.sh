@@ -3,10 +3,8 @@
 # Exit on error
 set -e
 
-CONFIG_DIR="/scry-pi"
+CONFIG_DIR="./scry-pi"
 CONFIG_FILE="$CONFIG_DIR/config.yml"
-CRED_KEY="custom_metrics_credentials_path"
-DEFAULT_CRED_PATH="$CONFIG_DIR/credentials.json"
 
 # Color codes
 GREEN='\033[0;32m'
@@ -25,6 +23,8 @@ error() {
 }
 
 if [ ! -f "$CONFIG_FILE" ]; then
+    # Ensure the config directory exists
+    mkdir -p "$CONFIG_DIR"
     # try cp example.config.yml
     if [ -f "$CONFIG_DIR/example.config.yml" ]; then
         cp "$CONFIG_DIR/example.config.yml" "$CONFIG_FILE"
