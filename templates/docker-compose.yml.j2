@@ -60,7 +60,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/
-      - ./grafana/provisioning/datasources/turso.yml:/etc/grafana/provisioning/datasources/turso.yml
     ports:
       - 3030:3000
     env_file:
