@@ -25,10 +25,13 @@ touch "$LOCK_FILE"
 
 
 # Get the latest commit hash from GitHub
-LATEST_COMMIT=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/commits/$BRANCH" | grep -m 1 '"sha":' | cut -d'"' -f4)
+# Adding error logging for curl
+API_RESPONSE=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/commits/$BRANCH" 2>&1)
+LATEST_COMMIT=$(echo "$API_RESPONSE" | grep -m 1 '"sha":' | cut -d'"' -f4)
 
 if [ -z "$LATEST_COMMIT" ]; then
-    log "Failed to get latest commit hash"
+    log "Failed to get latest commit hash. API response:"
+    log "$API_RESPONSE"
     rm -f "$LOCK_FILE"
     exit 1
 fi
@@ -64,13 +67,14 @@ else
 fi
 # Run the deployment
 log "Running deployment..."
-~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini
+# Adding error logging for ansible-playbook
+~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini >> "$LOG_FILE" 2>&1
 
 # Check if deployment was successful
 if [ $? -eq 0 ]; then
     log "Deployment completed successfully"
 else
-    log "Deployment failed"
+    log "Deployment failed. See logs above for details."
     rm -f "$LOCK_FILE"
     exit 1
 fi
