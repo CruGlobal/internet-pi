@@ -1,0 +1,25 @@
+---
+- name: Check if reboot is required.
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+  when: os_updates_enabled
+
+- name: Set up one-shot reboot service.
+  ansible.builtin.template:
+    src: templates/reboot.service.j2
+    dest: /etc/systemd/system/reboot-required.service
+  when:
+    - os_updates_enabled
+    - os_updates_reboot_allowed
+    - reboot_required_file.stat.exists
+
+- name: Enable one-shot reboot service.
+  ansible.builtin.systemd:
+    name: reboot-required.service
+    enabled: true
+    daemon_reload: true
+  when:
+    - os_updates_enabled
+    - os_updates_reboot_allowed
+    - reboot_required_file.stat.exists
