@@ -35,8 +35,6 @@ if [ ! -f "$CONFIG_FILE" ]; then
         sed -i 's|^custom_metrics_pgdatabase: ".*"|custom_metrics_pgdatabase: ""|' "$CONFIG_FILE"
         sed -i 's|^custom_metrics_pguser: ".*"|custom_metrics_pguser: ""|' "$CONFIG_FILE"
         sed -i 's|^custom_metrics_pgpassword: ".*"|custom_metrics_pgpassword: ""|' "$CONFIG_FILE"
-        sed -i 's|^custom_metrics_pgsslmode: ".*"|custom_metrics_pgsslmode: ""|' "$CONFIG_FILE"
-        sed -i 's|^custom_metrics_pgchannelbinding: ".*"|custom_metrics_pgchannelbinding: ""|' "$CONFIG_FILE"
     else
         error "config.yml not found at $CONFIG_FILE and example.config.yml not found in $CONFIG_DIR. Please ensure one exists."
         exit 1
@@ -61,15 +59,11 @@ config[pghost]=$(grep '^custom_metrics_pghost:' "$CONFIG_FILE" | awk -F': ' '{pr
 config[pgdatabase]=$(grep '^custom_metrics_pgdatabase:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[pguser]=$(grep '^custom_metrics_pguser:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 config[pgpassword]=$(grep '^custom_metrics_pgpassword:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-config[pgsslmode]=$(grep '^custom_metrics_pgsslmode:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-config[pgchannelbinding]=$(grep '^custom_metrics_pgchannelbinding:' "$CONFIG_FILE" | awk -F': ' '{print $2}' | tr -d '"' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
 
 echo "PGHOST: '${config[pghost]}'"
 echo "PGDATABASE: '${config[pgdatabase]}'"
 echo "PGUSER: '${config[pguser]}'"
 echo "PGPASSWORD: '${config[pgpassword]}'"
-echo "PGSSLMODE: '${config[pgsslmode]}'"
-echo "PGCHANNELBINDING: '${config[pgchannelbinding]}'"
 echo
 
 # Prompt for each value
@@ -102,14 +96,6 @@ echo "Current PGPASSWORD: ${config[pgpassword]}"
 read -p "Enter PGPASSWORD [${config[pgpassword]}]: " input
 if [ -n "$input" ]; then config[pgpassword]="$input"; fi
 
-echo "Current PGSSLMODE: ${config[pgsslmode]}"
-read -p "Enter PGSSLMODE [${config[pgsslmode]}]: " input
-if [ -n "$input" ]; then config[pgsslmode]="$input"; fi
-
-echo "Current PGCHANNELBINDING: ${config[pgchannelbinding]}"
-read -p "Enter PGCHANNELBINDING [${config[pgchannelbinding]}]: " input
-if [ -n "$input" ]; then config[pgchannelbinding]="$input"; fi
-
 echo
 echo "Summary of PostgreSQL configuration to be saved:"
 echo "  Location: ${config[location]}"
@@ -119,8 +105,6 @@ echo "  PGHOST: ${config[pghost]}"
 echo "  PGDATABASE: ${config[pgdatabase]}"
 echo "  PGUSER: ${config[pguser]}"
 echo "  PGPASSWORD: ${config[pgpassword]}"
-echo "  PGSSLMODE: ${config[pgsslmode]}"
-echo "  PGCHANNELBINDING: ${config[pgchannelbinding]}"
 read -p "Is this correct? [Y/n]: " confirm
 if [[ "$confirm" =~ ^[Nn] ]]; then
     echo "Aborting. No changes made."
@@ -135,7 +119,5 @@ sed -i "s|^custom_metrics_pghost:.*|custom_metrics_pghost: \"${config[pghost]}\"
 sed -i "s|^custom_metrics_pgdatabase:.*|custom_metrics_pgdatabase: \"${config[pgdatabase]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_pguser:.*|custom_metrics_pguser: \"${config[pguser]}\"|" "$CONFIG_FILE"
 sed -i "s|^custom_metrics_pgpassword:.*|custom_metrics_pgpassword: \"${config[pgpassword]}\"|" "$CONFIG_FILE"
-sed -i "s|^custom_metrics_pgsslmode:.*|custom_metrics_pgsslmode: \"${config[pgsslmode]}\"|" "$CONFIG_FILE"
-sed -i "s|^custom_metrics_pgchannelbinding:.*|custom_metrics_pgchannelbinding: \"${config[pgchannelbinding]}\"|" "$CONFIG_FILE"
 
 log "PostgreSQL configuration updated in $CONFIG_FILE."
