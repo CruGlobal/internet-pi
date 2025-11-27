@@ -60,6 +60,15 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     # Merge new configuration with user's configuration.
     yq eval-all '. as $item ireduce ({}; . * $item)' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
     
+    # check location, generate if not set
+    if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
+        log "custom_metrics_location is not set, generating one..."
+        pip3 install --user haikunator --break-system-packages
+        LOCATION=$(~/.local/bin/haikunator)
+        yq e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
+        log "custom_metrics_location set to $LOCATION"
+    fi
+
     # # Run the deployment
     # log "Running deployment..."
     # ~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini

@@ -90,7 +90,7 @@ fi
 
 # Install Ansible
 log "Installing Ansible..."
-pip3 install --user ansible --break-system-packages
+pip3 install --user ansible yq haikunator --break-system-packages
 
 # Ensure ~/.local/bin is in PATH
 export PATH="$HOME/.local/bin:$PATH"
