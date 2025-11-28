@@ -92,6 +92,14 @@ fi
 log "Installing Ansible..."
 pip3 install --user ansible yq haikunator --break-system-packages
 
+# check location, generate
+if [ -z "$(yq e '.custom_metrics_location' config.yml)" ]; then
+    log "custom_metrics_location is not set, generating one..."
+    LOCATION=$(python3 -m haikunator.main)
+    yq e ".custom_metrics_location = \"$LOCATION\"" -i config.yml
+    log "custom_metrics_location set to $LOCATION"
+fi
+
 # Ensure ~/.local/bin is in PATH
 export PATH="$HOME/.local/bin:$PATH"
 

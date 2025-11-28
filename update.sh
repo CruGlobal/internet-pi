@@ -64,7 +64,7 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
         log "custom_metrics_location is not set, generating one..."
         pip3 install --user haikunator --break-system-packages
-        LOCATION=$(~/.local/bin/haikunator)
+        LOCATION=$(python3 -m haikunator.main)
         yq e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
         log "custom_metrics_location set to $LOCATION"
     fi
