@@ -58,7 +58,7 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     git reset --hard "origin/$BRANCH"
 
     # Merge new configuration with user's configuration.
-    yq eval-all '. as $item ireduce ({}; . * $item)' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
+    yq -y '.[0] * .[1]' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
     
     # check location, generate if not set
     if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
