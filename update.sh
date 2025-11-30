@@ -63,8 +63,13 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     # check location, generate if not set
     if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
         log "custom_metrics_location is not set, generating one..."
-        pip3 install --user haikunator --break-system-packages
-        LOCATION=$(python3 -m haikunator.main)
+        log "custom_metrics_location is not set, generating one using UUID..."
+        if command -v uuidgen &>/dev/null; then
+            LOCATION=$(uuidgen | tr '[:upper:]' '[:lower:]') # Use uuidgen and convert to lowercase
+        else
+            warn "uuidgen not found. Generating a fallback random string for custom_metrics_location."
+            LOCATION=$(head /dev/urandom | tr -dc a-z0-9 | head -c 16) # Fallback to a random string
+        fi
         yq e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
         log "custom_metrics_location set to $LOCATION"
     fi

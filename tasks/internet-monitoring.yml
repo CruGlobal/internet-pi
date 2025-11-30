@@ -49,4 +49,5 @@
   community.docker.docker_compose_v2:
     project_src: "{{ config_dir }}/internet-monitoring/"
     build: never
+    pull: true
   become: false
