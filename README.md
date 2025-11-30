@@ -62,7 +62,6 @@ The Custom Metrics service collects network metrics from Prometheus and stores t
     custom_metrics_enable: true
     custom_metrics_prometheus_url: "http://prometheus:9090"
     custom_metrics_collection_interval: "5"
-    custom_metrics_use_postgres: "true"
     custom_metrics_pghost: "your-postgres-host"
     custom_metrics_pgdatabase: "your-postgres-database"
     custom_metrics_pguser: "your-postgres-user"
