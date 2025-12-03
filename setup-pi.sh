@@ -32,6 +32,8 @@ if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"
     exit 1
 fi
+log "reset DNS..."
+sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"
 
 # Install required packages
 log "Installing required packages..."
@@ -103,6 +105,10 @@ if [ ! -f inventory.ini ]; then
     log "Creating inventory.ini from example.inventory.ini..."
     cp example.inventory.ini inventory.ini
 fi
+
+# reset dns
+log "reset DNS..."
+sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"
 
 # Install Ansible
 log "Installing Ansible..."
