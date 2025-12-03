@@ -19,7 +19,7 @@ cd internet-pi
 chmod +x ./setup-pi.sh ./login.sh
 
 # Log in
-./login
+sudo ./login.sh
 
 # Run the setup script
 sudo ./setup-pi.sh
@@ -34,6 +34,10 @@ This will:
 
 After running the script, your Pi will be fully set up and will automatically check for updates.
 
+If dns breaks these cli commands should fix it
+```
+sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"
+```
 ---
 
 **A Raspberry Pi Configuration for Internet connectivity**
