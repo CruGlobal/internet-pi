@@ -85,17 +85,17 @@ if [ ! -f config.yml ]; then
 fi
 
 # Generate a UUID for custom_metrics_location if not set
-if [ -z "$(yq '.custom_metrics_location' config.yml)" ]; then
-    log "custom_metrics_location is not set, generating one using UUID..."
-    if command -v uuidgen &>/dev/null; then
-        LOCATION=$(uuidgen | tr '[:upper:]' '[:lower:]') # Use uuidgen and convert to lowercase
-    else
-        warn "uuidgen not found. Generating a fallback random string for custom_metrics_location."
-        LOCATION=$(head /dev/urandom | tr -dc a-z0-9 | head -c 16) # Fallback to a random string
-    fi
-    yq ".custom_metrics_location = \"$LOCATION\"" -i config.yml
-    log "custom_metrics_location set to $LOCATION"
-fi
+# if [ -z "$(yq '.custom_metrics_location' config.yml)" ]; then
+#     log "custom_metrics_location is not set, generating one using UUID..."
+#     if command -v uuidgen &>/dev/null; then
+#         LOCATION=$(uuidgen | tr '[:upper:]' '[:lower:]') # Use uuidgen and convert to lowercase
+#     else
+#         warn "uuidgen not found. Generating a fallback random string for custom_metrics_location."
+#         LOCATION=$(head /dev/urandom | tr -dc a-z0-9 | head -c 16) # Fallback to a random string
+#     fi
+#     yq ".custom_metrics_location = \"$LOCATION\"" -i config.yml
+#     log "custom_metrics_location set to $LOCATION"
+# fi
 
 
 
