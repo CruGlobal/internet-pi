@@ -1,11 +1,5 @@
 PROMETHEUS_URL={{ custom_metrics_prometheus_url }}
 COLLECTION_INTERVAL={{ custom_metrics_collection_interval }}
-# GOOGLE_APPLICATION_CREDENTIALS=/config/credentials.json
+GOOGLE_APPLICATION_CREDENTIALS=/app/.secret.json
 LOCATION={{ custom_metrics_location }}
 UPDATE_INTERVAL={{ custom_metrics_update_interval }}
-PGHOST={{ custom_metrics_pghost }}
-PGDATABASE={{ custom_metrics_pgdatabase }}
-PGUSER={{ custom_metrics_pguser }}
-PGPASSWORD={{ custom_metrics_pgpassword }}
-PGSSLMODE={{ custom_metrics_pgsslmode }}
-PGCHANNELBINDING={{ custom_metrics_pgchannelbinding }}
