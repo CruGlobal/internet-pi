@@ -139,6 +139,7 @@ services:
       - COLLECTION_INTERVAL={{ custom_metrics_collection_interval }}
       - LOCATION={{ custom_metrics_location }}
       - UPDATE_INTERVAL={{ custom_metrics_update_interval }}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/.secret.json
     networks:
       - back-tier
     depends_on:
