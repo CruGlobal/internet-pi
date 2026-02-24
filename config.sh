@@ -43,7 +43,7 @@ report_enabled_services() {
         return
     fi
     echo -e "\nEnabled services in config.yml:" | tee -a "$LOG_FILE"
-    grep -E '^(custom_metrics_enable|monitoring_enable|shelly_plug_enable|airgradient_enable|starlink_enable):' "$config_file" | \
+    grep -E '^(custom_metrics_enable|monitoring_enable):' "$config_file" | \
     while IFS=: read -r key value; do
         key=$(echo "$key" | xargs)
         value=$(echo "$value" | xargs)
