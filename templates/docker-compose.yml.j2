@@ -113,7 +113,6 @@ services:
     environment:
       - PROMETHEUS_URL=http://prometheus:9090
       - LOCATION={{ custom_metrics_location }}
-      - UPDATE_INTERVAL={{ custom_metrics_update_interval }}
     networks:
       - back-tier
     depends_on:
