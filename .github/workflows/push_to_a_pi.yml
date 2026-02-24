@@ -84,7 +84,7 @@ jobs:
       - name: Prepare environment
         run: |
           # Check if directories exist and have correct permissions
-          for dir in "$HOME/pi-hole" "$HOME/internet-monitoring"; do
+          for dir in "$HOME/internet-monitoring"; do
             if [ ! -d "$dir" ]; then
               sudo mkdir -p "$dir"
               sudo chown -R $USER:$USER "$dir"
@@ -140,7 +140,7 @@ jobs:
       - name: Create required directories
         run: |
           # Create internet-monitoring directory structure
-          sudo mkdir -p /root/internet-monitoring/{grafana,prometheus}
+          sudo mkdir -p /root/internet-monitoring/{prometheus}
           sudo chown -R $USER:$USER /root/internet-monitoring
           sudo chmod -R 755 /root/internet-monitoring
 
@@ -157,7 +157,7 @@ jobs:
 
       - name: Check all containers are stable
         run: |
-          for name in internet-monitoring-custom-metrics-1 pihole pihole-exporter internet-monitoring-grafana-1 internet-monitoring-prometheus-1 internet-monitoring-ping-1 internet-monitoring-speedtest-1 internet-monitoring-nodeexp-1; do
+          for name in internet-monitoring-custom-metrics-1 internet-monitoring-prometheus-1 internet-monitoring-ping-1 internet-monitoring-speedtest-1 internet-monitoring-nodeexp-1; do
             status=$(docker inspect -f '{{.State.Status}}' $name 2>/dev/null || echo "notfound")
             health=$(docker inspect -f '{{.State.Health.Status}}' $name 2>/dev/null || echo "nohealth")
             if [ "$status" != "running" ]; then

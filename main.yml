@@ -57,22 +57,6 @@
       ansible.builtin.import_tasks: tasks/custom-metrics.yml
       when: custom_metrics_enable
 
-    - name: Set up Pi Hole.
-      ansible.builtin.import_tasks: tasks/pi-hole.yml
-      when: pihole_enable
-
-    - name: Set up Shelly Plug Monitoring.
-      ansible.builtin.import_tasks: tasks/shelly-plug.yml
-      when: shelly_plug_enable
-
-    - name: Set up Air Gradient Monitoring.
-      ansible.builtin.import_tasks: tasks/airgradient.yml
-      when: airgradient_enable
-
-    - name: Set up Starlink Monitoring.
-      ansible.builtin.import_tasks: tasks/starlink.yml
-      when: starlink_enable
-
     - name: Set up updater service
       ansible.builtin.import_tasks: tasks/updater.yml
 

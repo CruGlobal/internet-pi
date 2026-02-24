@@ -43,7 +43,7 @@ report_enabled_services() {
         return
     fi
     echo -e "\nEnabled services in config.yml:" | tee -a "$LOG_FILE"
-    grep -E '^(custom_metrics_enable|pihole_enable|monitoring_enable|shelly_plug_enable|airgradient_enable|starlink_enable):' "$config_file" | \
+    grep -E '^(custom_metrics_enable|monitoring_enable|shelly_plug_enable|airgradient_enable|starlink_enable):' "$config_file" | \
     while IFS=: read -r key value; do
         key=$(echo "$key" | xargs)
         value=$(echo "$value" | xargs)
@@ -64,18 +64,6 @@ show_status() {
         docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
     else
         warn "Docker not installed"
-    fi
-    # Check if monitoring is accessible
-    if curl -s http://localhost:3030 &> /dev/null; then
-        log "Grafana monitoring is accessible at http://localhost:3030"
-    else
-        warn "Grafana monitoring is not accessible"
-    fi
-    # Check if Pi-hole is accessible
-    if curl -s http://localhost/admin &> /dev/null; then
-        log "Pi-hole is accessible at http://localhost/admin"
-    else
-        warn "Pi-hole is not accessible"
     fi
 }
 

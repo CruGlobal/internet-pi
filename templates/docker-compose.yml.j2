@@ -2,7 +2,6 @@
 ---
 volumes:
   prometheus_data: {}
-  grafana_data: {}
 
 networks:
   front-tier:
@@ -51,29 +50,6 @@ services:
     environment:
       - VIRTUAL_HOST={{ domain_prometheus }}.{{ domain_name }}
       - VIRTUAL_PORT=9090
-{% endif %}
-
-  grafana:
-    image: grafana/grafana:latest
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - grafana_data:/var/lib/grafana
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-    ports:
-      - 3030:3000
-    env_file:
-      - ./grafana/config.monitoring
-    networks:
-      - back-tier
-      - front-tier
-    depends_on:
-      - prometheus
-{% if domain_name_enable and domain_name and domain_grafana %}
-      - nginx-proxy
-    environment:
-      - VIRTUAL_HOST={{ domain_grafana }}.{{ domain_name }}
-      - VIRTUAL_PORT=3000
 {% endif %}
 
   ping:

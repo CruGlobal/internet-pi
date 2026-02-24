@@ -81,10 +81,6 @@ The Custom Metrics service collects network metrics from Prometheus and stores t
 To setup the PostgreSQL table:
 ```
 
-This CLI command setup the tables:
-```
-PGPASSWORD="your-postgres-password" psql -h "your-postgres-host" -U "your-postgres-user" -d "your-postgres-database" -c "CREATE TABLE ping (site_id TEXT NOT NULL, timestamp TEXT NOT NULL, location TEXT, google_up REAL DEFAULT 0, apple_up REAL DEFAULT 0, github_up REAL DEFAULT 0, pihole_up REAL DEFAULT 0, node_up REAL DEFAULT 0, speedtest_up REAL DEFAULT 0, http_latency REAL, http_samples REAL, http_time REAL, http_content_length REAL, http_duration REAL, PRIMARY KEY (site_id, timestamp)); CREATE TABLE speed (site_id TEXT NOT NULL, timestamp TEXT NOT NULL, location TEXT, download_mbps REAL, upload_mbps REAL, ping_ms REAL, jitter_ms REAL, PRIMARY KEY (site_id, timestamp));"
-```
 
 ### Metrics Collected
 
@@ -140,18 +136,6 @@ It should also work with Ubuntu for Pi, or Arch Linux, but has not been tested o
 > **If running locally on the Pi**: You may encounter an error like "Error while fetching server API version" or "connect: permission denied". If you do, please either reboot or log out and log back in, then run the playbook again.
 
 ## Usage
-
-### Pi-hole
-
-Visit the Pi's IP address (e.g. http://192.168.1.10/admin) and use the `pihole_password` you configured in your `config.yml` file. An existing pi-hole installation can be left unaltered by disabling the setup of this project's installation in your `config.yml` (`pihole_enable: false`)
-
-### Grafana
-
-Visit the Pi's IP address with port 3030 (e.g. http://192.168.1.10:3030/), and log in with username `admin` and the password `monitoring_grafana_admin_password` you configured in your `config.yml`.
-
-To find the dashboard, navigate to Dashboards, click Browse, then go to the Internet connection dashboard. If you star this dashboard, it will appear on the Grafana home page.
-
-> Note: The `monitoring_grafana_admin_password` is only used the first time Grafana starts up; if you need to change it later, do it via Grafana's admin UI.
 
 ### Prometheus
 

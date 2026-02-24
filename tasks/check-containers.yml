@@ -4,9 +4,6 @@
     name: "{{ item }}"
   loop:
     - internet-monitoring-custom-metrics-1
-    - pihole
-    - pihole-exporter
-    - internet-monitoring-grafana-1
     - internet-monitoring-prometheus-1
     - internet-monitoring-ping-1
     - internet-monitoring-speedtest-1
