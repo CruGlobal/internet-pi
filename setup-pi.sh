@@ -68,10 +68,40 @@ log "Setting ownership and permissions for $INSTALL_DIR..."
 chown -R "$RUNNER_USER":"$RUNNER_USER" "$INSTALL_DIR"
 chmod -R 0755 "$INSTALL_DIR"
 
+# Ensure config.yml exists in the current directory, or create it from example.config.yml
+if [ ! -f "./config.yml" ]; then
+    log "config.yml not found in the current directory. Creating from example.config.yml..."
+    cp example.config.yml config.yml
+fi
+
+# Prompt for custom_metrics_location if not set
+CURRENT_LOCATION=$(grep "custom_metrics_location:" ./config.yml | cut -d ':' -f 2- | xargs)
+if [ -z "$CURRENT_LOCATION" ]; then
+    read -p "Enter custom_metrics_location (e.g., 'Thailand'): " NEW_LOCATION
+    if [ -n "$NEW_LOCATION" ]; then
+        yq ".custom_metrics_location = \"$NEW_LOCATION\"" -i ./config.yml
+        log "custom_metrics_location set to $NEW_LOCATION in ./config.yml"
+    else
+        warn "custom_metrics_location not provided. It will remain unset."
+    fi
+fi
+
+# Prompt for custom_metrics_site_id if not set
+CURRENT_SITE_ID=$(grep "custom_metrics_site_id:" ./config.yml | cut -d ':' -f 2- | xargs)
+if [ -z "$CURRENT_SITE_ID" ]; then
+    read -p "Enter custom_metrics_site_id (e.g., 'my house'): " NEW_SITE_ID
+    if [ -n "$NEW_SITE_ID" ]; then
+        yq ".custom_metrics_site_id = \"$NEW_SITE_ID\"" -i ./config.yml
+        log "custom_metrics_site_id set to $NEW_SITE_ID in ./config.yml"
+    else
+        warn "custom_metrics_site_id not provided. It will remain unset."
+    fi
+fi
+
 # Copy secrets/keys/config from working directory to the new location
 log "Copying config.yml and pi_remote_hosts to $INSTALL_DIR..."
-cp ../config.yml "$INSTALL_DIR/config.yml" || true
-cp ../pi_remote_hosts "$INSTALL_DIR/pi_remote_hosts" || true
+cp ./config.yml "$INSTALL_DIR/config.yml" || true
+cp ./pi_remote_hosts "$INSTALL_DIR/pi_remote_hosts" || true
 
 # Clone/update the repository
 if [ ! -d "$INSTALL_DIR/.git" ]; then
@@ -175,3 +205,6 @@ log "Ansible playbook completed."
 
 log "Setup complete! The Pi will now automatically check for updates every hour."
 log "You can manually check for updates by running: update-internet-pi"
+
+log "reset DNS..."
+sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"

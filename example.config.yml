@@ -19,6 +19,10 @@ monitoring_ping_hosts:  # [URL];[HUMAN_READABLE_NAME]
   - http://www.google.com/;google.com
   - https://github.com/;github.com
   - https://www.apple.com/;apple.com
+  - https://netsuite.cru.org/;netsuite.cru.org
+  - https://netsuite.cru.org/;netsuite.cru.org
+  - https://cru.org/;cru.org
+  - https://okta.com/;okta.com
 
 # Prometheus configuration.
 prometheus_monitor_prometheus: false
@@ -31,4 +35,5 @@ prometheus_tsdb_retention_time: 7d
 custom_metrics_enable: true 
 custom_metrics_prometheus_url: "http://prometheus:9090"
 custom_metrics_location: "" 
+custom_metrics_site_id: "" 
 

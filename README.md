@@ -50,36 +50,19 @@ So that's what this is.
 
 ## Custom Metrics Service
 
-The Custom Metrics service collects network metrics from Prometheus and stores them in PostgreSQL for long-term analysis and visualization.
-
-### Prerequisites
-
-1.  A PostgreSQL database.
-2.  PostgreSQL database connection details (host, database name, user, and password).
+The Custom Metrics service collects network metrics from Prometheus and stores them in google sheets for long-term analysis and visualization.
 
 ### Setup
 
-1.  Create a PostgreSQL database and obtain its connection details.
-
-2.  Update your `config.yml` with the PostgreSQL details:
     ```yaml
-    custom_metrics_enable: true
-    custom_metrics_prometheus_url: "http://prometheus:9090"
-    custom_metrics_collection_interval: "5"
-    custom_metrics_pghost: "your-postgres-host"
-    custom_metrics_pgdatabase: "your-postgres-database"
-    custom_metrics_pguser: "your-postgres-user"
-    custom_metrics_pgpassword: "your-postgres-password"
-    custom_metrics_pgsslmode: "require"
+custom_metrics_location: "" 
+custom_metrics_site_id: "" 
     ```
 
 3.  Run the playbook:
     ```bash
     ansible-playbook main.yml
     ```
-
-To setup the PostgreSQL table:
-```
 
 
 ### Metrics Collected
@@ -89,7 +72,7 @@ The service collects the following metrics from Prometheus:
 - `speedtest_upload_bits_per_second`
 - `speedtest_ping_latency_milliseconds`
 
-These metrics are stored in PostgreSQL for long-term analysis.
+These metrics are stored in google sheets for long-term analysis.
 
 **Internet Monitoring**: Installs Prometheus and Grafana, along with a few Docker containers to monitor your Internet connection with Speedtest.net speedtests and HTTP tests so you can see uptime, ping stats, and speedtest results over time.
 

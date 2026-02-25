@@ -109,10 +109,10 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config:/config
-      - ../.secret.json:/app/.secret.json 
     environment:
       - PROMETHEUS_URL=http://prometheus:9090
       - LOCATION={{ custom_metrics_location }}
+      - UPDATE_INTERVAL=5
     networks:
       - back-tier
     depends_on:

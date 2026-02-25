@@ -114,20 +114,12 @@ ensure_config_yml() {
 
 # Main script execution
 case "$1" in
-    "login")
-        bash "$INSTALL_DIR/login.sh"
-        ;;
     "install")
-        # Check for required postgress config and credentials
+        # Check for required config 
         CONFIG_FILE="$CONFIG_DIR/config.yml"
-        REQUIRED_KEYS=(            "custom_metrics_location"
-            "custom_metrics_pghost"
-            "custom_metrics_pgdatabase"
-            "custom_metrics_pguser"
-            "custom_metrics_pgpassword"
-            "custom_metrics_pgsslmode"
-            "custom_metrics_pgchannelbinding"
-            "custom_metrics_collection_interval"
+        REQUIRED_KEYS=(            
+            "custom_metrics_location"
+            "custom_metrics_site_id"
         )
         MISSING_KEY=false
         for key in "${REQUIRED_KEYS[@]}"; do
@@ -136,10 +128,6 @@ case "$1" in
                 break
             fi
         done
-        if [ "$MISSING_KEY" = true ]; then
-            error "Database configuration incomplete. Please run: ./config.sh login"
-            exit 1
-        fi
         check_root
         update_setup_script
         if [ ! -f "$SETUP_SCRIPT" ]; then

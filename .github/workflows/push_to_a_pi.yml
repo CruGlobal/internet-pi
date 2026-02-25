@@ -117,16 +117,6 @@ jobs:
           # Create inventory with actual username and sudo configuration
           echo -e "[internet_pi]\n127.0.0.1 ansible_connection=local ansible_user=$USER ansible_become=true ansible_become_method=sudo" > inventory.ini
 
-          # Set up BigQuery configuration using config.sh login
-          {
-            echo "${{ secrets.BIGQUERY_PROJECT }}"  # Project ID
-            echo "${{ secrets.METRICS_LOCATION }}"  # Location
-            echo "y"  # Yes, update credentials
-            echo '${{ secrets.GOOGLE_CLOUD_CREDENTIALS }}'  # Credentials JSON
-            echo "1h"  # Collection interval
-            echo "y"  # Confirm settings
-          } | ./config.sh login
-
   deploy:
     runs-on: self-hosted
     needs: build
