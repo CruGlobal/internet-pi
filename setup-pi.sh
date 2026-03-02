@@ -43,6 +43,7 @@ apt-get install -y git python3 python3-pip
 log "Installing yq package..."
 wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm
 chmod a+x /usr/local/bin/yq
+log yq --version
 
 log "Installing ZeroTier..."
 curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/main/doc/contact%40zerotier.com.gpg' | gpg --import && \
@@ -102,16 +103,16 @@ if [ -z "$CURRENT_SITE_ID" ]; then
     fi
 fi
 
-# Copy secrets/keys/config from working directory to the new location
-log "Copying config.yml and pi_remote_hosts to $INSTALL_DIR..."
-cp ./config.yml "$INSTALL_DIR/config.yml" || true
-cp ./pi_remote_hosts "$INSTALL_DIR/pi_remote_hosts" || true
-
 # Clone/update the repository
 if [ ! -d "$INSTALL_DIR/.git" ]; then
     log "Cloning repository..."
     git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$INSTALL_DIR"
 fi
+
+# Copy secrets/keys/config from working directory to the new location
+log "Copying config.yml and pi_remote_hosts to $INSTALL_DIR..."
+cp ./config.yml "$INSTALL_DIR/config.yml" || true
+cp ./pi_remote_hosts "$INSTALL_DIR/pi_remote_hosts" || true
 
 # Copy default config files if they do not exist
 cd "$INSTALL_DIR"
