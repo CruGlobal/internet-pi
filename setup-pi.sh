@@ -43,7 +43,7 @@ apt-get install -y git python3 python3-pip
 log "Installing yq package..."
 wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm
 chmod a+x /usr/local/bin/yq
-log yq --version
+yq --version
 
 log "Installing ZeroTier..."
 curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/main/doc/contact%40zerotier.com.gpg' | gpg --import && \
