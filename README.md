@@ -16,10 +16,7 @@ cd $HOME
 
 git clone https://github.com/CruGlobal/internet-pi.git
 cd internet-pi
-chmod +x ./setup-pi.sh ./login.sh
-
-# Log in
-sudo ./login.sh
+chmod +x ./setup-pi.sh
 
 # Run the setup script
 sudo ./setup-pi.sh
