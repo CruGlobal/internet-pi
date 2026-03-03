@@ -43,9 +43,9 @@
   notify: Restart internet-monitoring
   become: false
 
-- name: Ensure internet-monitoring environment is running.
-  community.docker.docker_compose_v2:
-    project_src: "{{ config_dir }}/internet-monitoring/"
-    build: never
-    pull: always
-  become: false
+#- name: Ensure internet-monitoring environment is running.
+#  community.docker.docker_compose_v2:
+#   project_src: "{{ config_dir }}/internet-monitoring/"
+#    build: never
+#    pull: always
+#  become: false
