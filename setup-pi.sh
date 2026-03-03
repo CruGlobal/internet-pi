@@ -58,14 +58,10 @@ if [ -d "$INSTALL_DIR" ]; then
         git fetch origin
         git reset --hard "origin/$BRANCH"
     else
-        warn "Directory exists but is not a git repository. Removing all contents for a fresh install..."
-        rm -rf "$INSTALL_DIR"/*
-        rm -rf "$INSTALL_DIR"/.[!.]* 2>/dev/null || true
-        log "Emptied $INSTALL_DIR for a fresh clone."
+        warn "Directory exists but is not a git repository. Removing it for a fresh install..."
+        rm -rf "$INSTALL_DIR"
+        log "Removed $INSTALL_DIR for a fresh clone."
     fi
-else
-    # Create installation directory
-    mkdir -p "$INSTALL_DIR"
 fi
 
 # Set ownership and permissions for the install directory
