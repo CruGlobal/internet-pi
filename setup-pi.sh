@@ -64,6 +64,12 @@ if [ -d "$INSTALL_DIR" ]; then
     fi
 fi
 
+# Clone/update the repository
+if [ ! -d "$INSTALL_DIR/.git" ]; then
+    log "Cloning repository..."
+    git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$INSTALL_DIR"
+fi
+
 # Set ownership and permissions for the install directory
 log "Setting ownership and permissions for $INSTALL_DIR..."
 chown -R "$RUNNER_USER":"$RUNNER_USER" "$INSTALL_DIR"
@@ -97,12 +103,6 @@ if [ -z "$CURRENT_SITE_ID" ]; then
     else
         warn "custom_metrics_site_id not provided. It will remain unset."
     fi
-fi
-
-# Clone/update the repository
-if [ ! -d "$INSTALL_DIR/.git" ]; then
-    log "Cloning repository..."
-    git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$INSTALL_DIR"
 fi
 
 # Copy secrets/keys/config from working directory to the new location
