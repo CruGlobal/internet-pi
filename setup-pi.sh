@@ -92,7 +92,7 @@ CURRENT_LOCATION=$(grep "custom_metrics_location:" ./config.yml | cut -d ':' -f 
 if [ -z "$CURRENT_LOCATION" ]; then
     read -p "Enter custom_metrics_location (e.g., 'Thailand'): " NEW_LOCATION
     if [ -n "$NEW_LOCATION" ]; then
-        yq ".custom_metrics_location = \"$NEW_LOCATION\"" -i ./config.yml
+        yq -y ".custom_metrics_location = \"$NEW_LOCATION\"" -i ./config.yml
         log "custom_metrics_location set to $NEW_LOCATION in ./config.yml"
     else
         warn "custom_metrics_location not provided. It will remain unset."
@@ -104,7 +104,7 @@ CURRENT_SITE_ID=$(grep "custom_metrics_site_id:" ./config.yml | cut -d ':' -f 2-
 if [ -z "$CURRENT_SITE_ID" ]; then
     read -p "Enter custom_metrics_site_id (e.g., 'my house'): " NEW_SITE_ID
     if [ -n "$NEW_SITE_ID" ]; then
-        yq ".custom_metrics_site_id = \"$NEW_SITE_ID\"" -i ./config.yml
+        yq -y ".custom_metrics_site_id = \"$NEW_SITE_ID\"" -i ./config.yml
         log "custom_metrics_site_id set to $NEW_SITE_ID in ./config.yml"
     else
         warn "custom_metrics_site_id not provided. It will remain unset."

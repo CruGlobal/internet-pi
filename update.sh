@@ -70,7 +70,7 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
             warn "uuidgen not found. Generating a fallback random string for custom_metrics_location."
             LOCATION=$(head /dev/urandom | tr -dc a-z0-9 | head -c 16) # Fallback to a random string
         fi
-        yq e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
+        yq -y e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
         log "custom_metrics_location set to $LOCATION"
     fi
 else
