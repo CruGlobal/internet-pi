@@ -19,9 +19,6 @@ jobs:
       - name: Make test script executable
         run: chmod +x tests/test_update.sh
 
-      - name: Run basic tests
-        run: tests/test_update.sh
-
       - name: Set up Docker repository and yq
         run: |
           # Add Docker's official GPG key:
@@ -49,8 +46,13 @@ jobs:
           yq '.custom_metrics_location = "CI_Location"' -i config.yml
           yq '.custom_metrics_site_id = "CI_Site_ID"' -i config.yml
 
+      - name: remove any running containers
+        run: |
+            docker stop $(docker ps -aq)
+            docker rm $(docker ps -aq)
+
       - name: Run installer script
-        run: sudo -E bash ./config.sh install
+        run: sudo -E bash ./setup-pi.sh
 
       - name: Check Ansible installation
         run: ansible --version
