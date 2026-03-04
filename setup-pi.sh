@@ -12,6 +12,8 @@ BACKUP_DIR="$INSTALL_DIR.backup"
 
 # Determine the user running the script
 RUNNER_USER=$(whoami)
+# Determine the target user for installation (original user who ran sudo, or root if not sudo)
+TARGET_USER=${SUDO_USER:-root}
 
 # Color codes for output
 GREEN='\033[0;32m'
@@ -34,6 +36,10 @@ if [ "$EUID" -ne 0 ]; then
 fi
 log "reset DNS..."
 sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"
+
+# Install Ansible
+log "Installing Ansible..."
+pip3 install --user ansible yq --break-system-packages
 
 # Install required packages
 log "Installing required packages..."
@@ -72,7 +78,7 @@ fi
 
 # Set ownership and permissions for the install directory
 log "Setting ownership and permissions for $INSTALL_DIR..."
-chown -R "$RUNNER_USER":"$RUNNER_USER" "$INSTALL_DIR"
+chown -R "$TARGET_USER":"$TARGET_USER" "$INSTALL_DIR"
 chmod -R 0755 "$INSTALL_DIR"
 
 # Ensure config.yml exists in the current directory, or create it from example.config.yml
@@ -141,10 +147,6 @@ fi
 log "reset DNS..."
 sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"
 
-# Install Ansible
-log "Installing Ansible..."
-pip3 install --user ansible yq --break-system-packages
-
 # Ensure ~/.local/bin is in PATH
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -181,10 +183,10 @@ fi
 
 # Insert or replace User in the service file
 if grep -q '^User=' "$SERVICE_FILE"; then
-    sed -i "s|^User=.*$|User=$RUNNER_USER|" "$SERVICE_FILE"
+    sed -i "s|^User=.*$|User=$TARGET_USER|" "$SERVICE_FILE"
 else
     # Insert User after [Service] section header
-    sed -i "/^\[Service\]/a User=$RUNNER_USER" "$SERVICE_FILE"
+    sed -i "/^\[Service\]/a User=$TARGET_USER" "$SERVICE_FILE"
 fi
 
 # Reload systemd
