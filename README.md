@@ -16,10 +16,7 @@ cd $HOME
 
 git clone https://github.com/CruGlobal/internet-pi.git
 cd internet-pi
-chmod +x ./setup-pi.sh ./login.sh
-
-# Log in
-sudo ./login.sh
+chmod +x ./setup-pi.sh
 
 # Run the setup script
 sudo ./setup-pi.sh
@@ -74,13 +71,7 @@ The service collects the following metrics from Prometheus:
 
 These metrics are stored in google sheets for long-term analysis.
 
-**Internet Monitoring**: Installs Prometheus and Grafana, along with a few Docker containers to monitor your Internet connection with Speedtest.net speedtests and HTTP tests so you can see uptime, ping stats, and speedtest results over time.
-
-![Internet Monitoring Dashboard in Grafana](images/internet-monitoring.png)
-
-**Pi-hole**: Installs the Pi-hole Docker configuration so you can use Pi-hole for network-wide ad-blocking and local DNS. Make sure to update your network router config to direct all DNS queries through your Raspberry Pi if you want to use Pi-hole effectively!
-
-![Pi-hole on the Internet Pi](images/pi-hole.png)
+**Internet Monitoring**: Installs a few Docker containers to monitor your Internet connection with Speedtest.net speedtests and HTTP tests so you can see uptime, ping stats, and speedtest results over time.
 
 Other features:
 
@@ -96,8 +87,6 @@ Other computers and VMs may run this configuration as well, but it is only regul
 
 The configuration is tested against Raspberry Pi OS, both 64-bit and 32-bit, and runs great on that or a generic Debian installation.
 
-It should also work with Ubuntu for Pi, or Arch Linux, but has not been tested on other operating systems.
-
 ## Setup
 
   1. [Install Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html). The easiest way (especially on Pi or a Debian system) is via Pip:
@@ -105,7 +94,7 @@ It should also work with Ubuntu for Pi, or Arch Linux, but has not been tested o
      2. (Everywhere): `pip3 install ansible`
      3. If you get an error like "externally-managed-environment", follow [this guide to fix it](https://www.jeffgeerling.com/blog/2023/how-solve-error-externally-managed-environment-when-installing-pip3), then run `pip3 install ansible` again.
      4. Make sure Ansible is in your PATH: `export PATH=$PATH:~/.local/bin` (and consider [adding it permanently](https://askubuntu.com/a/1113838)).
-  2. Clone this repository: `git clone https://github.com/geerlingguy/internet-pi.git`, then enter the repository directory: `cd internet-pi`.
+  2. Clone this repository: `git clone https://github.com/CruGlobal/internet-pi.git`, then enter the repository directory: `cd internet-pi`.
   3. Install requirements: `ansible-galaxy collection install -r requirements.yml` (if you see `ansible-galaxy: command not found`, restart your SSH session or reboot the Pi and try again)
   4. Make copies of the following files and customize them to your liking:
      - `example.inventory.ini` to `inventory.ini` (replace IP address with your Pi's IP, or comment that line and uncomment the `connection=local` line if you're running it on the Pi you're setting up).
@@ -116,39 +105,6 @@ It should also work with Ubuntu for Pi, or Arch Linux, but has not been tested o
 
 ## Usage
 
-### Prometheus
-
-A number of default Prometheus job configurations are included out of the box, but if you would like to add more to the `prometheus.yml` file, you can add a block of text that will be added to the end of the `scrape_configs` using the `prometheus_extra_scrape_configs` variable, for example:
-
-```yaml
-prometheus_extra_scrape_configs: |
-  - job_name: 'customjob'
-    scrape_interval: 5s
-    static_configs:
-      - targets: ['192.168.1.1:9100']
-```
-
-You can also add more targets to monitor via the node exporter dashboard, say if you have a number of servers or other Pis you want to monitor on this instance. Just add them to the list, after the `nodeexp:9100` entry for the main Pi:
-
-```yaml
-prometheus_node_exporter_targets:
-  - 'nodeexp:9100'
-  # Add more targets here
-  - 'another-server.local:9100'
-```
-
-## Updating
-
-### pi-hole
-
-To upgrade Pi-hole to the latest version, run the following commands:
-
-```bash
-cd ~/pi-hole # 
-docker compose pull             # pulls the latest images
-docker compose up -d --no-deps  # restarts containers with newer images
-docker system prune --all       # deletes unused images
-```
 
 ### Configurations and internet-monitoring images
 
@@ -171,19 +127,9 @@ cd ~/internet-monitoring
 # Shut down internet-monitoring containers and delete data volumes.
 docker compose down -v
 
-# Enter the pi-hole directory.
-cd ~/pi-hole
-
-# Shutdown pi-hole containers and delete data volumes.
-docker compose down -v
-
 # Delete all the unused container images, volumes, etc. from the system.
 docker system prune -af
 ```
-
-Do the same thing for any of the other optional directories added by this project (e.g. `shelly-plug-prometheus`, `starlink-exporter`, etc.).
-
-You can then delete the `internet-monitoring`, `pi-hole`, etc. folders and everything will be gone from your system.
 
 ## License
 

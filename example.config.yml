@@ -20,7 +20,6 @@ monitoring_ping_hosts:  # [URL];[HUMAN_READABLE_NAME]
   - https://github.com/;github.com
   - https://www.apple.com/;apple.com
   - https://netsuite.cru.org/;netsuite.cru.org
-  - https://netsuite.cru.org/;netsuite.cru.org
   - https://cru.org/;cru.org
   - https://okta.com/;okta.com
 

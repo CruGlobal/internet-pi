@@ -40,6 +40,11 @@ log "Installing required packages..."
 apt-get update
 apt-get install -y git python3 python3-pip
 
+log "Installing yq package..."
+wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm
+chmod a+x /usr/local/bin/yq
+yq --version
+
 log "Installing ZeroTier..."
 curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/main/doc/contact%40zerotier.com.gpg' | gpg --import && \
 if z=$(curl -s 'https://install.zerotier.com/' | gpg); then echo "$z" | sudo bash; fi
@@ -57,6 +62,12 @@ if [ -d "$INSTALL_DIR" ]; then
         rm -rf "$INSTALL_DIR"
         log "Removed $INSTALL_DIR for a fresh clone."
     fi
+fi
+
+# Clone/update the repository
+if [ ! -d "$INSTALL_DIR/.git" ]; then
+    log "Cloning repository..."
+    git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$INSTALL_DIR"
 fi
 
 # Set ownership and permissions for the install directory
@@ -98,12 +109,6 @@ fi
 log "Copying config.yml and pi_remote_hosts to $INSTALL_DIR..."
 cp ./config.yml "$INSTALL_DIR/config.yml" || true
 cp ./pi_remote_hosts "$INSTALL_DIR/pi_remote_hosts" || true
-
-# Clone/update the repository
-if [ ! -d "$INSTALL_DIR/.git" ]; then
-    log "Cloning repository..."
-    git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$INSTALL_DIR"
-fi
 
 # Copy default config files if they do not exist
 cd "$INSTALL_DIR"
