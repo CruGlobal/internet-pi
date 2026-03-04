@@ -4,8 +4,6 @@
 REPO_OWNER="${REPO_OWNER:-CruGlobal}"
 REPO_NAME="${REPO_NAME:-internet-pi}"
 BRANCH="${BRANCH:-master}"
-# UPDATE_INTERVAL=3600  # Check every hour
-UPDATE_INTERVAL=500 # DEV MODE check every 5 minutes
 LOG_FILE="${LOG_FILE:-/var/log/internet-pi-updates.log}"
 LOCK_FILE="${LOCK_FILE:-/tmp/internet-pi-update.lock}"
 
@@ -58,7 +56,7 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     git reset --hard "origin/$BRANCH"
 
     # Merge new configuration with user's configuration.
-    yq -y '.[0] * .[1]' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
+    yq '.[0] * .[1]' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
     
     # check location, generate if not set
     if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
@@ -70,7 +68,7 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
             warn "uuidgen not found. Generating a fallback random string for custom_metrics_location."
             LOCATION=$(head /dev/urandom | tr -dc a-z0-9 | head -c 16) # Fallback to a random string
         fi
-        yq -y e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
+        yq e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
         log "custom_metrics_location set to $LOCATION"
     fi
 else
