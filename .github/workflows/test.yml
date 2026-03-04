@@ -43,8 +43,8 @@ jobs:
       - name: Create config.yml for CI
         run: |
           cp example.config.yml config.yml
-          yq -y '.custom_metrics_location = "CI_Location"' -i config.yml
-          yq -y '.custom_metrics_site_id = "CI_Site_ID"' -i config.yml
+          yq '.custom_metrics_location = "CI_Location"' -i config.yml
+          yq '.custom_metrics_site_id = "CI_Site_ID"' -i config.yml
 
       - name: Run installer script
         run: sudo -E bash ./config.sh install
