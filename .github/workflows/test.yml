@@ -13,6 +13,9 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
 
+      - name: Create pi user for testing
+        run: sudo useradd -m -s /bin/bash -G sudo pi
+
       - name: Make test script executable
         run: chmod +x tests/test_update.sh
 
