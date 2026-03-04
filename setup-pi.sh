@@ -37,15 +37,14 @@ fi
 log "reset DNS..."
 sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"
 
-# Install Ansible
-log "Installing Ansible..."
-pip3 install --user ansible yq --break-system-packages
 
 # Install required packages
 log "Installing required packages..."
 apt-get update
 apt-get install -y git python3 python3-pip
-
+# Install Ansible
+log "Installing Ansible..."
+pip3 install --user ansible yq --break-system-packages
 log "Installing yq package..."
 wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm
 chmod a+x /usr/local/bin/yq

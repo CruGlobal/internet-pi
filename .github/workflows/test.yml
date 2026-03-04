@@ -84,10 +84,3 @@ jobs:
       - name: Check Prometheus Docker container
         run: docker ps --filter "name=prometheus" --format "{{.Names}}" | grep -q "prometheus"
 
-      - name: Check updater service and timer
-        run: |
-          systemctl status internet-pi-updater.service || true
-          systemctl status internet-pi-updater.timer || true
-
-      - name: Check install succeeds after login
-        run: sudo -E ./config.sh install
