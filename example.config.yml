@@ -1,6 +1,6 @@
 ---
 # User configuration.
-github_username: ["johnny-hausman", "roguisharcanetrickster", "elephanteleven", "joshAppDev"]
+github_username: ["johnny-hausman", "roguisharcanetrickster", "elephanteleven", "joshAppDev", "therealwizywig"]
 
 # Location where configuration files will be stored.
 config_dir: '/scry-pi'
