@@ -112,7 +112,7 @@ services:
     environment:
       - PROMETHEUS_URL=http://prometheus:9090
       - LOCATION={{ custom_metrics_location }}
-      - SITE_ID={{ custom_metrics_site_id }}
+      - DEVICE_ID={{ custom_metrics_device_id }}
     networks:
       - back-tier
     depends_on:

@@ -13,8 +13,12 @@
   ansible.builtin.fail:
     msg: "Container {{ item.invocation.module_args.name }} is not healthy or not running!"
   when: >
-    (item.containers is not defined) or
-    (item.containers | length == 0) or
-    (item.containers[0].State.Status != 'running') or
-    (item.invocation.module_args.name != 'internet-monitoring-speedtest-1' and item.containers[0].State.Health is defined and item.containers[0].State.Health.Status != 'healthy')
+    (item.container is not defined) or
+    (item.container.State.Status != 'running') or
+    (item.invocation.module_args.name == 'internet-monitoring-speedtest-1' and
+     item.container.State.Health is defined and
+     item.container.State.Health.Status not in ['healthy', 'starting']) or
+    (item.invocation.module_args.name != 'internet-monitoring-speedtest-1' and
+     item.container.State.Health is defined and
+     item.container.State.Health.Status != 'healthy')
   loop: "{{ container_info.results }}"

@@ -57,7 +57,16 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
 
     # Merge new configuration with user's configuration.
     yq '.[0] * .[1]' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
-    
+
+    # Migrate legacy custom_metrics_site_id to custom_metrics_device_id
+    OLD_SITE_ID=$(yq e '.custom_metrics_site_id // ""' /scry-pi/config.yml)
+    CURRENT_DEVICE_ID=$(yq e '.custom_metrics_device_id // ""' /scry-pi/config.yml)
+    if [ -n "$OLD_SITE_ID" ] && [ "$OLD_SITE_ID" != "null" ] && { [ -z "$CURRENT_DEVICE_ID" ] || [ "$CURRENT_DEVICE_ID" = "null" ]; }; then
+        yq e ".custom_metrics_device_id = \"$OLD_SITE_ID\"" -i /scry-pi/config.yml
+        yq e 'del(.custom_metrics_site_id)' -i /scry-pi/config.yml
+        log "Migrated custom_metrics_site_id to custom_metrics_device_id"
+    fi
+
     # check location, generate if not set
     if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
         log "custom_metrics_location is not set, generating one..."

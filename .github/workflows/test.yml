@@ -44,7 +44,7 @@ jobs:
         run: |
           cp example.config.yml config.yml
           yq '.custom_metrics_location = "CI_Location"' -i config.yml
-          yq '.custom_metrics_site_id = "CI_Site_ID"' -i config.yml
+          yq '.custom_metrics_device_id = "CI_Device_ID"' -i config.yml
 
       - name: Run installer script
         run: sudo -E bash ./setup-pi.sh

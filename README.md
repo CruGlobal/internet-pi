@@ -53,7 +53,7 @@ The Custom Metrics service collects network metrics from Prometheus and stores t
 
     ```yaml
 custom_metrics_location: "" 
-custom_metrics_site_id: "" 
+custom_metrics_device_id: "" 
     ```
 
 3.  Run the playbook:

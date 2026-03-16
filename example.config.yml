@@ -13,7 +13,8 @@ pihole_enable: false
 
 # Internet monitoring configuration.
 monitoring_enable: true
-monitoring_speedtest_interval: 60m
+monitoring_speedtest_interval: 610s
+monitoring_speedtest_timeout: 600s
 monitoring_ping_interval: 5s
 monitoring_ping_hosts:  # [URL];[HUMAN_READABLE_NAME]
   - http://www.google.com/;google.com
@@ -34,5 +35,5 @@ prometheus_tsdb_retention_time: 7d
 custom_metrics_enable: true 
 custom_metrics_prometheus_url: "http://prometheus:9090"
 custom_metrics_location: "" 
-custom_metrics_site_id: "" 
+custom_metrics_device_id: "" 
 
