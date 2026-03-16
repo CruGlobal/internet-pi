@@ -56,7 +56,12 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     git reset --hard "origin/$BRANCH"
 
     # Merge new configuration with user's configuration.
-    yq '.[0] * .[1]' example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
+    if [ -f /scry-pi/config.yml ]; then
+        cp /scry-pi/config.yml /scry-pi/config.yml.bak
+        yq eval-all 'select(file_index == 0) * select(file_index == 1)' /scry-pi/example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
+    else
+        cp /scry-pi/example.config.yml /scry-pi/config.yml
+    fi
 
     # Migrate legacy custom_metrics_site_id to custom_metrics_device_id
     OLD_SITE_ID=$(yq e '.custom_metrics_site_id // ""' /scry-pi/config.yml)
