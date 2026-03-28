@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=pi
-ExecStart=/bin/bash /home/pi/internet-pi/update_system.sh
+ExecStart=/bin/bash /scry-pi/update_system.sh
 
 [Install]
 WantedBy=multi-user.target

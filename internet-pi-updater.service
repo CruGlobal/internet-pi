@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 User=pi
-ExecStart=/bin/bash /home/pi/internet-pi/update.sh
+ExecStart=/bin/bash /scry-pi/update.sh
 Restart=on-failure
 RestartSec=300
 

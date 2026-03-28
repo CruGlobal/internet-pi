@@ -90,8 +90,7 @@ else
 fi
 # Run the deployment
 log "Running deployment..."
-# Adding error logging for ansible-playbook
-~/.local/bin/ansible-playbook main.yml -e "runner_user=$USER" -i inventory.ini >> "$LOG_FILE" 2>&1
+ansible-playbook main.yml
 
 # Check if deployment was successful
 if [ $? -eq 0 ]; then
