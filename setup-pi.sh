@@ -115,6 +115,9 @@ log "Copying config.yml and pi_remote_hosts to $INSTALL_DIR..."
 cp ./config.yml "$INSTALL_DIR/config.yml" || true
 cp ./pi_remote_hosts "$INSTALL_DIR/pi_remote_hosts" || true
 
+# convert to json and back to remove comments
+yq -i -o=json /scry-pi/config.yml && yq -i -P /scry-pi/config.yml
+
 # Copy default config files if they do not exist
 cd "$INSTALL_DIR"
 if [ ! -f config.yml ]; then

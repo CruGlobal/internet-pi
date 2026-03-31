@@ -59,6 +59,7 @@ if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
     if [ -f /scry-pi/config.yml ]; then
         cp /scry-pi/config.yml /scry-pi/config.yml.bak
         yq eval-all 'select(file_index == 0) * select(file_index == 1)' /scry-pi/example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
+        yq -i -o=json /scry-pi/config.yml && yq -i -P /scry-pi/config.yml
     else
         cp /scry-pi/example.config.yml /scry-pi/config.yml
     fi
