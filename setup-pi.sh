@@ -22,21 +22,20 @@ NC='\033[0m' # No Color
 
 # Helper functions
 log() {
-    echo -e "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')] $1${NC}"
+  echo -e "${GREEN}[$(date '+%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
 warn() {
-    echo -e "${YELLOW}[$(date '+%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}"
+  echo -e "${YELLOW}[$(date '+%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}"
 }
 
 # Ensure script is run as root
 if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root"
-    exit 1
+  echo "Please run as root"
+  exit 1
 fi
 log "reset DNS..."
 sudo bash -c "grep -q '^nameserver 1.1.1.1' /etc/resolv.conf || sudo sed -i '/^nameserver/cnameserver 1.1.1.1' /etc/resolv.conf || echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf" && sudo bash -c "grep -q '^nameserver 1.0.0.1' /etc/resolv.conf || echo 'nameserver 1.0.0.1' | sudo tee -a /etc/resolv.conf"
-
 
 # Install required packages
 log "Installing required packages..."
@@ -51,28 +50,28 @@ chmod a+x /usr/local/bin/yq
 yq --version
 
 log "Installing ZeroTier..."
-curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/main/doc/contact%40zerotier.com.gpg' | gpg --import && \
-if z=$(curl -s 'https://install.zerotier.com/' | gpg); then echo "$z" | sudo bash; fi
-sudo zerotier-cli join 856127940CDC6AE5
+curl -s 'https://raw.githubusercontent.com/zerotier/ZeroTierOne/main/doc/contact%40zerotier.com.gpg' | gpg --import &&
+  if z=$(curl -s 'https://install.zerotier.com/' | gpg); then echo "$z" | sudo bash; fi
+sudo zerotier-cli join 633e31d8a24687c7
 
 # Handle existing installation
 if [ -d "$INSTALL_DIR" ]; then
-    if [ -d "$INSTALL_DIR/.git" ]; then
-        warn "Existing installation found. Updating instead of fresh install..."
-        cd "$INSTALL_DIR"
-        git fetch origin
-        git reset --hard "origin/$BRANCH"
-    else
-        warn "Directory exists but is not a git repository. Removing it for a fresh install..."
-        rm -rf "$INSTALL_DIR"
-        log "Removed $INSTALL_DIR for a fresh clone."
-    fi
+  if [ -d "$INSTALL_DIR/.git" ]; then
+    warn "Existing installation found. Updating instead of fresh install..."
+    cd "$INSTALL_DIR"
+    git fetch origin
+    git reset --hard "origin/$BRANCH"
+  else
+    warn "Directory exists but is not a git repository. Removing it for a fresh install..."
+    rm -rf "$INSTALL_DIR"
+    log "Removed $INSTALL_DIR for a fresh clone."
+  fi
 fi
 
 # Clone/update the repository
 if [ ! -d "$INSTALL_DIR/.git" ]; then
-    log "Cloning repository..."
-    git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$INSTALL_DIR"
+  log "Cloning repository..."
+  git clone "https://github.com/$REPO_OWNER/$REPO_NAME.git" "$INSTALL_DIR"
 fi
 
 # Set ownership and permissions for the install directory
@@ -82,32 +81,32 @@ chmod -R 0755 "$INSTALL_DIR"
 
 # Ensure config.yml exists in the current directory, or create it from example.config.yml
 if [ ! -f "./config.yml" ]; then
-    log "config.yml not found in the current directory. Creating from example.config.yml..."
-    cp example.config.yml config.yml
+  log "config.yml not found in the current directory. Creating from example.config.yml..."
+  cp example.config.yml config.yml
 fi
 
 # Prompt for custom_metrics_location if not set
 CURRENT_LOCATION=$(grep "custom_metrics_location:" ./config.yml | cut -d ':' -f 2- | xargs)
 if [ -z "$CURRENT_LOCATION" ]; then
-    read -p "Enter custom_metrics_location (e.g., 'Thailand'): " NEW_LOCATION
-    if [ -n "$NEW_LOCATION" ]; then
-        yq ".custom_metrics_location = \"$NEW_LOCATION\"" -i ./config.yml
-        log "custom_metrics_location set to $NEW_LOCATION in ./config.yml"
-    else
-        warn "custom_metrics_location not provided. It will remain unset."
-    fi
+  read -p "Enter custom_metrics_location (e.g., 'Thailand'): " NEW_LOCATION
+  if [ -n "$NEW_LOCATION" ]; then
+    yq ".custom_metrics_location = \"$NEW_LOCATION\"" -i ./config.yml
+    log "custom_metrics_location set to $NEW_LOCATION in ./config.yml"
+  else
+    warn "custom_metrics_location not provided. It will remain unset."
+  fi
 fi
 
 # Prompt for custom_metrics_device_id if not set
 CURRENT_DEVICE_ID=$(grep "custom_metrics_device_id:" ./config.yml | cut -d ':' -f 2- | xargs)
 if [ -z "$CURRENT_DEVICE_ID" ]; then
-    read -p "Enter custom_metrics_device_id (e.g., 'my house'): " NEW_DEVICE_ID
-    if [ -n "$NEW_DEVICE_ID" ]; then
-        yq ".custom_metrics_device_id = \"$NEW_DEVICE_ID\"" -i ./config.yml
-        log "custom_metrics_device_id set to $NEW_DEVICE_ID in ./config.yml"
-    else
-        warn "custom_metrics_device_id not provided. It will remain unset."
-    fi
+  read -p "Enter custom_metrics_device_id (e.g., 'my house'): " NEW_DEVICE_ID
+  if [ -n "$NEW_DEVICE_ID" ]; then
+    yq ".custom_metrics_device_id = \"$NEW_DEVICE_ID\"" -i ./config.yml
+    log "custom_metrics_device_id set to $NEW_DEVICE_ID in ./config.yml"
+  else
+    warn "custom_metrics_device_id not provided. It will remain unset."
+  fi
 fi
 
 # Copy secrets/keys/config from working directory to the new location
@@ -121,14 +120,13 @@ yq -i -o=json /scry-pi/config.yml && yq -i -P /scry-pi/config.yml
 # Copy default config files if they do not exist
 cd "$INSTALL_DIR"
 if [ ! -f config.yml ]; then
-    log "Creating config.yml from example.config.yml..."
-    cp example.config.yml config.yml
+  log "Creating config.yml from example.config.yml..."
+  cp example.config.yml config.yml
 fi
 
-
 if [ ! -f inventory.ini ]; then
-    log "Creating inventory.ini from example.inventory.ini..."
-    cp example.inventory.ini inventory.ini
+  log "Creating inventory.ini from example.inventory.ini..."
+  cp example.inventory.ini inventory.ini
 fi
 
 # reset dns
@@ -155,26 +153,26 @@ EXEC_PATH="/usr/local/bin/update-internet-pi"
 REPO_ROOT="$INSTALL_DIR" # This is the directory where the git repo is cloned
 
 if grep -q '^ExecStart=' "$SERVICE_FILE"; then
-    sed -i "s|^ExecStart=.*$|ExecStart=$EXEC_PATH|" "$SERVICE_FILE"
+  sed -i "s|^ExecStart=.*$|ExecStart=$EXEC_PATH|" "$SERVICE_FILE"
 else
-    # Insert ExecStart after [Service] section header
-    sed -i "/^\[Service\]/a ExecStart=$EXEC_PATH" "$SERVICE_FILE"
+  # Insert ExecStart after [Service] section header
+  sed -i "/^\[Service\]/a ExecStart=$EXEC_PATH" "$SERVICE_FILE"
 fi
 
 # Insert or replace WorkingDirectory in the service file
 if grep -q '^WorkingDirectory=' "$SERVICE_FILE"; then
-    sed -i "s|^WorkingDirectory=.*$|WorkingDirectory=$REPO_ROOT|" "$SERVICE_FILE"
+  sed -i "s|^WorkingDirectory=.*$|WorkingDirectory=$REPO_ROOT|" "$SERVICE_FILE"
 else
-    # Insert WorkingDirectory after [Service] section header
-    sed -i "/^\[Service\]/a WorkingDirectory=$REPO_ROOT" "$SERVICE_FILE"
+  # Insert WorkingDirectory after [Service] section header
+  sed -i "/^\[Service\]/a WorkingDirectory=$REPO_ROOT" "$SERVICE_FILE"
 fi
 
 # Insert or replace User in the service file
 if grep -q '^User=' "$SERVICE_FILE"; then
-    sed -i "s|^User=.*$|User=$TARGET_USER|" "$SERVICE_FILE"
+  sed -i "s|^User=.*$|User=$TARGET_USER|" "$SERVICE_FILE"
 else
-    # Insert User after [Service] section header
-    sed -i "/^\[Service\]/a User=$TARGET_USER" "$SERVICE_FILE"
+  # Insert User after [Service] section header
+  sed -i "/^\[Service\]/a User=$TARGET_USER" "$SERVICE_FILE"
 fi
 
 # Reload systemd

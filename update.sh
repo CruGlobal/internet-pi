@@ -9,28 +9,27 @@ LOCK_FILE="${LOCK_FILE:-/tmp/internet-pi-update.lock}"
 
 # Logging function
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
 }
 
 # Check if another update is running
 if [ -f "$LOCK_FILE" ]; then
-    # Check if the process is still running
-    PID=$(cat "$LOCK_FILE")
-    if [ -n "$PID" ] && ps -p "$PID" > /dev/null; then
-        log "Update already in progress with PID $PID, exiting"
-        exit 1
-    else
-        log "Found stale lock file, removing"
-        rm -f "$LOCK_FILE"
-    fi
+  # Check if the process is still running
+  PID=$(cat "$LOCK_FILE")
+  if [ -n "$PID" ] && ps -p "$PID" >/dev/null; then
+    log "Update already in progress with PID $PID, exiting"
+    exit 1
+  else
+    log "Found stale lock file, removing"
+    rm -f "$LOCK_FILE"
+  fi
 fi
 
 # Create lock file with current PID
-echo $$ > "$LOCK_FILE"
+echo $$ >"$LOCK_FILE"
 
 # Ensure lock file is removed on exit
 trap 'rm -f "$LOCK_FILE"' EXIT
-
 
 # Get the latest commit hash from GitHub
 # Adding error logging for curl
@@ -38,10 +37,10 @@ API_RESPONSE=$(curl -s "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/comm
 LATEST_COMMIT=$(echo "$API_RESPONSE" | grep -m 1 '"sha":' | cut -d'"' -f4)
 
 if [ -z "$LATEST_COMMIT" ]; then
-    log "Failed to get latest commit hash. API response:"
-    log "$API_RESPONSE"
-    rm -f "$LOCK_FILE"
-    exit 1
+  log "Failed to get latest commit hash. API response:"
+  log "$API_RESPONSE"
+  rm -f "$LOCK_FILE"
+  exit 1
 fi
 
 # Get current commit hash
@@ -49,45 +48,45 @@ CURRENT_COMMIT=$(git rev-parse HEAD)
 
 # Check if update is needed
 if [ "$LATEST_COMMIT" != "$CURRENT_COMMIT" ]; then
-    log "Update available. Current: $CURRENT_COMMIT, Latest: $LATEST_COMMIT"
-    
-    # Pull latest changes
-    git fetch origin
-    git reset --hard "origin/$BRANCH"
+  log "Update available. Current: $CURRENT_COMMIT, Latest: $LATEST_COMMIT"
 
-    # Merge new configuration with user's configuration.
-    if [ -f /scry-pi/config.yml ]; then
-        cp /scry-pi/config.yml /scry-pi/config.yml.bak
-        yq eval-all 'select(file_index == 0) * select(file_index == 1)' /scry-pi/example.config.yml /scry-pi/config.yml > /scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
-        yq -i -o=json /scry-pi/config.yml && yq -i -P /scry-pi/config.yml
+  # Pull latest changes
+  git fetch origin
+  git reset --hard "origin/$BRANCH"
+
+  # Merge new configuration with user's configuration.
+  if [ -f /scry-pi/config.yml ]; then
+    cp /scry-pi/config.yml /scry-pi/config.yml.bak
+    yq eval-all 'select(file_index == 0) * select(file_index == 1)' /scry-pi/example.config.yml /scry-pi/config.yml >/scry-pi/config.yml.tmp && mv /scry-pi/config.yml.tmp /scry-pi/config.yml
+    yq -i -o=json /scry-pi/config.yml && yq -i -P /scry-pi/config.yml
+  else
+    cp /scry-pi/example.config.yml /scry-pi/config.yml
+  fi
+
+  # Migrate legacy custom_metrics_site_id to custom_metrics_device_id
+  OLD_SITE_ID=$(yq e '.custom_metrics_site_id // ""' /scry-pi/config.yml)
+  CURRENT_DEVICE_ID=$(yq e '.custom_metrics_device_id // ""' /scry-pi/config.yml)
+  if [ -n "$OLD_SITE_ID" ] && [ "$OLD_SITE_ID" != "null" ] && { [ -z "$CURRENT_DEVICE_ID" ] || [ "$CURRENT_DEVICE_ID" = "null" ]; }; then
+    yq e ".custom_metrics_device_id = \"$OLD_SITE_ID\"" -i /scry-pi/config.yml
+    yq e 'del(.custom_metrics_site_id)' -i /scry-pi/config.yml
+    log "Migrated custom_metrics_site_id to custom_metrics_device_id"
+  fi
+
+  # check location, generate if not set
+  if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
+    log "custom_metrics_location is not set, generating one..."
+    log "custom_metrics_location is not set, generating one using UUID..."
+    if command -v uuidgen &>/dev/null; then
+      LOCATION=$(uuidgen | tr '[:upper:]' '[:lower:]') # Use uuidgen and convert to lowercase
     else
-        cp /scry-pi/example.config.yml /scry-pi/config.yml
+      warn "uuidgen not found. Generating a fallback random string for custom_metrics_location."
+      LOCATION=$(head /dev/urandom | tr -dc a-z0-9 | head -c 16) # Fallback to a random string
     fi
-
-    # Migrate legacy custom_metrics_site_id to custom_metrics_device_id
-    OLD_SITE_ID=$(yq e '.custom_metrics_site_id // ""' /scry-pi/config.yml)
-    CURRENT_DEVICE_ID=$(yq e '.custom_metrics_device_id // ""' /scry-pi/config.yml)
-    if [ -n "$OLD_SITE_ID" ] && [ "$OLD_SITE_ID" != "null" ] && { [ -z "$CURRENT_DEVICE_ID" ] || [ "$CURRENT_DEVICE_ID" = "null" ]; }; then
-        yq e ".custom_metrics_device_id = \"$OLD_SITE_ID\"" -i /scry-pi/config.yml
-        yq e 'del(.custom_metrics_site_id)' -i /scry-pi/config.yml
-        log "Migrated custom_metrics_site_id to custom_metrics_device_id"
-    fi
-
-    # check location, generate if not set
-    if [ -z "$(yq e '.custom_metrics_location' /scry-pi/config.yml)" ]; then
-        log "custom_metrics_location is not set, generating one..."
-        log "custom_metrics_location is not set, generating one using UUID..."
-        if command -v uuidgen &>/dev/null; then
-            LOCATION=$(uuidgen | tr '[:upper:]' '[:lower:]') # Use uuidgen and convert to lowercase
-        else
-            warn "uuidgen not found. Generating a fallback random string for custom_metrics_location."
-            LOCATION=$(head /dev/urandom | tr -dc a-z0-9 | head -c 16) # Fallback to a random string
-        fi
-        yq e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
-        log "custom_metrics_location set to $LOCATION"
-    fi
+    yq e ".custom_metrics_location = \"$LOCATION\"" -i /scry-pi/config.yml
+    log "custom_metrics_location set to $LOCATION"
+  fi
 else
-    log "No updates available"
+  log "No updates available"
 fi
 # Run the deployment
 log "Running deployment..."
@@ -95,11 +94,11 @@ ansible-playbook main.yml
 
 # Check if deployment was successful
 if [ $? -eq 0 ]; then
-    log "Deployment completed successfully"
+  log "Deployment completed successfully"
 else
-    log "Deployment failed. See logs above for details."
-    rm -f "$LOCK_FILE"
-    exit 1
+  log "Deployment failed. See logs above for details."
+  rm -f "$LOCK_FILE"
+  exit 1
 fi
 # Remove lock file
 rm -f "$LOCK_FILE"
