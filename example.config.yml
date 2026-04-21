@@ -20,9 +20,8 @@ monitoring_ping_hosts:  # [URL];[HUMAN_READABLE_NAME]
   - http://www.google.com/;google.com
   - https://github.com/;github.com
   - https://www.apple.com/;apple.com
-  - https://netsuite.cru.org/;netsuite.cru.org
-  - https://cru.org/;cru.org
-  - https://okta.com/;okta.com
+  - https://download.windowsupdate.com/;download.windowsupdate.com
+  - https://https://signon.okta.com/;signon.okta.com
 
 # Prometheus configuration.
 prometheus_monitor_prometheus: false
@@ -31,9 +30,9 @@ prometheus_node_exporter_targets:
 prometheus_extra_scrape_configs: ''
 prometheus_tsdb_retention_time: 7d
 
-# Custom Metrics configuration (Also requires `monitoring_enable`)
-custom_metrics_enable: true 
+# Custom Metrics configuration (also requires monitoring_enable).
+# custom_metrics_device_id is passed as DEVICE_ID only; not a geo/location field.
+custom_metrics_enable: true
 custom_metrics_prometheus_url: "http://prometheus:9090"
-custom_metrics_location: "" 
-custom_metrics_device_id: "" 
+custom_metrics_device_id: ""
 

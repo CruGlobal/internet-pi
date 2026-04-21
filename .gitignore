@@ -3,5 +3,6 @@ config.yml
 .DS_Store
 .git_creden
 .vscode
-
+remote_hosts
 .secret.json
+.env
