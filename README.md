@@ -47,29 +47,32 @@ So that's what this is.
 
 ## Custom Metrics Service
 
-The Custom Metrics service collects network metrics from Prometheus and stores them in google sheets for long-term analysis and visualization.
+The Custom Metrics container queries Prometheus and submits rows to a Google Form. The only host label from this stack is `DEVICE_ID`, set from `custom_metrics_device_id` in `config.yml`. No separate device-location or geo field is configured here.
 
 ### Setup
 
-    ```yaml
-custom_metrics_location: "" 
-custom_metrics_device_id: "" 
-    ```
+Requires `monitoring_enable: true` (same Prometheus stack). In `config.yml`:
 
-3.  Run the playbook:
-    ```bash
-    ansible-playbook main.yml
-    ```
+```yaml
+custom_metrics_enable: true
+custom_metrics_device_id: ""   # set to a stable opaque label, e.g. hostname or inventory id
+```
 
+Then run the playbook:
+
+```bash
+ansible-playbook main.yml
+```
 
 ### Metrics Collected
 
-The service collects the following metrics from Prometheus:
+The service collects the following metrics from Prometheus (among others configured in the custom-metrics image):
+
 - `speedtest_download_bits_per_second`
 - `speedtest_upload_bits_per_second`
 - `speedtest_ping_latency_milliseconds`
 
-These metrics are stored in google sheets for long-term analysis.
+These are included in form submissions for long-term analysis.
 
 **Internet Monitoring**: Installs a few Docker containers to monitor your Internet connection with Speedtest.net speedtests and HTTP tests so you can see uptime, ping stats, and speedtest results over time.
 

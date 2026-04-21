@@ -43,7 +43,6 @@ jobs:
       - name: Create config.yml for CI
         run: |
           cp example.config.yml config.yml
-          yq '.custom_metrics_location = "CI_Location"' -i config.yml
           yq '.custom_metrics_device_id = "CI_Device_ID"' -i config.yml
 
       - name: Run installer script

@@ -85,22 +85,10 @@ if [ ! -f "./config.yml" ]; then
   cp example.config.yml config.yml
 fi
 
-# Prompt for custom_metrics_location if not set
-CURRENT_LOCATION=$(grep "custom_metrics_location:" ./config.yml | cut -d ':' -f 2- | xargs)
-if [ -z "$CURRENT_LOCATION" ]; then
-  read -p "Enter custom_metrics_location (e.g., 'Thailand'): " NEW_LOCATION
-  if [ -n "$NEW_LOCATION" ]; then
-    yq ".custom_metrics_location = \"$NEW_LOCATION\"" -i ./config.yml
-    log "custom_metrics_location set to $NEW_LOCATION in ./config.yml"
-  else
-    warn "custom_metrics_location not provided. It will remain unset."
-  fi
-fi
-
 # Prompt for custom_metrics_device_id if not set
 CURRENT_DEVICE_ID=$(grep "custom_metrics_device_id:" ./config.yml | cut -d ':' -f 2- | xargs)
 if [ -z "$CURRENT_DEVICE_ID" ]; then
-  read -p "Enter custom_metrics_device_id (e.g., 'my house'): " NEW_DEVICE_ID
+  read -p "Enter custom_metrics_device_id (stable label for this Pi, e.g. pi-lab-01): " NEW_DEVICE_ID
   if [ -n "$NEW_DEVICE_ID" ]; then
     yq ".custom_metrics_device_id = \"$NEW_DEVICE_ID\"" -i ./config.yml
     log "custom_metrics_device_id set to $NEW_DEVICE_ID in ./config.yml"
