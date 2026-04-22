@@ -1,0 +1,33 @@
+---
+# Quick sync: stash + pull /scry-pi, then docker compose up (detached) in internet-monitoring.
+- name: Quick scry-pi sync and compose
+  hosts: scry_pi
+  become: true
+
+  vars:
+    scry_repo_dir: /scry-pi
+    scry_compose_dir: "{{ scry_repo_dir }}/internet-monitoring"
+
+  tasks:
+    - name: Stash local changes in repo
+      ansible.builtin.command:
+        cmd: git stash
+        chdir: "{{ scry_repo_dir }}"
+
+    - name: Pull latest in repo
+      ansible.builtin.command:
+        cmd: git pull
+        chdir: "{{ scry_repo_dir }}"
+
+    - name: run setup-pi.sh
+      ansible.builtin.command:
+        cmd: sudo bash "./setup-pi.sh"
+        chdir: "{{ scry_repo_dir }}"
+
+## to just update custom metrics
+    # - name: Bring up internet-monitoring stack
+    #   community.docker.docker_compose_v2:
+    #     project_src: "{{ scry_compose_dir }}"
+    #     state: present
+    #     pull: always
+    #     detached: true
