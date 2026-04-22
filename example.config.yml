@@ -20,6 +20,7 @@ monitoring_ping_hosts:  # [URL];[HUMAN_READABLE_NAME]
   - http://www.google.com/;google.com
   - https://github.com/;github.com
   - https://www.apple.com/;apple.com
+  - https://netsuite.cru.org/;netsuite.cru.org
   - https://download.windowsupdate.com/;download.windowsupdate.com
   - https://https://signon.okta.com/;signon.okta.com
 
