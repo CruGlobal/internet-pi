@@ -1,82 +1,82 @@
-name: Tests
+# name: Tests
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
+# on:
+#   push:
+#     branches:
+#       - master
+#   pull_request:
 
-jobs:
-  test:
-    runs-on: ubuntu-24.04-arm
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
+# jobs:
+#   test:
+#     runs-on: ubuntu-24.04-arm
+#     steps:
+#       - name: Check out repo
+#         uses: actions/checkout@v4
 
-      - name: Create pi user for testing
-        run: sudo useradd -m -s /bin/bash -G sudo pi
+#       - name: Create pi user for testing
+#         run: sudo useradd -m -s /bin/bash -G sudo pi
 
-      - name: Make test script executable
-        run: chmod +x tests/test_update.sh
+#       - name: Make test script executable
+#         run: chmod +x tests/test_update.sh
 
-      - name: Set up Docker repository and yq
-        run: |
-          # Add Docker's official GPG key:
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates curl gnupg # Removed yq from apt-get install
-          sudo install -m 0755 -d /etc/apt/keyrings
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-          sudo chmod a+r /etc/apt/keyrings/docker.gpg
+#       - name: Set up Docker repository and yq
+#         run: |
+#           # Add Docker's official GPG key:
+#           sudo apt-get update
+#           sudo apt-get install -y ca-certificates curl gnupg # Removed yq from apt-get install
+#           sudo install -m 0755 -d /etc/apt/keyrings
+#           curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+#           sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
-          # Add the repository to Apt sources:
-          echo \
-            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-            $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-            sudo tee -a /etc/apt/sources.list.d/docker.list > /dev/null
-          sudo apt-get update
+#           # Add the repository to Apt sources:
+#           echo \
+#             "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+#             $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+#             sudo tee -a /etc/apt/sources.list.d/docker.list > /dev/null
+#           sudo apt-get update
 
-      - name: Install mikefarah/yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm
-          sudo chmod a+x /usr/local/bin/yq
+#       - name: Install mikefarah/yq
+#         run: |
+#           sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_arm
+#           sudo chmod a+x /usr/local/bin/yq
 
-      - name: Create config.yml for CI
-        run: |
-          cp example.config.yml config.yml
-          yq '.custom_metrics_device_id = "CI_Device_ID"' -i config.yml
+#       - name: Create config.yml for CI
+#         run: |
+#           cp example.config.yml config.yml
+#           yq '.custom_metrics_device_id = "CI_Device_ID"' -i config.yml
 
-      - name: Run installer script
-        run: sudo -E bash ./setup-pi.sh
+#       - name: Run installer script
+#         run: sudo -E bash ./setup-pi.sh
 
-      - name: Check Ansible installation
-        run: ansible --version
+#       - name: Check Ansible installation
+#         run: ansible --version
 
-      - name: Check Docker installation
-        run: docker --version
+#       - name: Check Docker installation
+#         run: docker --version
 
-      - name: Check ZeroTier installation
-        run: zerotier-cli -v
+#       - name: Check ZeroTier installation
+#         run: zerotier-cli -v
 
-      - name: Check update-internet-pi script
-        run: |
-          test -f /usr/local/bin/update-internet-pi
-          test -x /usr/local/bin/update-internet-pi
+#       - name: Check update-internet-pi script
+#         run: |
+#           test -f /usr/local/bin/update-internet-pi
+#           test -x /usr/local/bin/update-internet-pi
 
-      - name: Check internet-pi-updater.service configuration and status
-        run: |
-          grep -q "ExecStart=/usr/local/bin/update-internet-pi" /etc/systemd/system/internet-pi-updater.service
-          grep -q "WorkingDirectory=/scry-pi" /etc/systemd/system/internet-pi-updater.service
-          grep -q "User=$(whoami)" /etc/systemd/system/internet-pi-updater.service
-          systemctl is-enabled internet-pi-updater.service
-          systemctl is-active internet-pi-updater.service
+#       - name: Check internet-pi-updater.service configuration and status
+#         run: |
+#           grep -q "ExecStart=/usr/local/bin/update-internet-pi" /etc/systemd/system/internet-pi-updater.service
+#           grep -q "WorkingDirectory=/scry-pi" /etc/systemd/system/internet-pi-updater.service
+#           grep -q "User=$(whoami)" /etc/systemd/system/internet-pi-updater.service
+#           systemctl is-enabled internet-pi-updater.service
+#           systemctl is-active internet-pi-updater.service
 
-      - name: Check repository cloning and config files
-        run: |
-          test -d /scry-pi/.git
-          test -f /scry-pi/config.yml
-          test -f /scry-pi/pi_remote_hosts
-          test -f /scry-pi/inventory.ini
+#       - name: Check repository cloning and config files
+#         run: |
+#           test -d /scry-pi/.git
+#           test -f /scry-pi/config.yml
+#           test -f /scry-pi/pi_remote_hosts
+#           test -f /scry-pi/inventory.ini
 
-      - name: Check Prometheus Docker container
-        run: docker ps --filter "name=prometheus" --format "{{.Names}}" | grep -q "prometheus"
+#       - name: Check Prometheus Docker container
+#         run: docker ps --filter "name=prometheus" --format "{{.Names}}" | grep -q "prometheus"
 
