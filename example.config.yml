@@ -22,7 +22,7 @@ monitoring_ping_hosts:  # [URL];[HUMAN_READABLE_NAME]
   - https://www.apple.com/;apple.com
   - https://netsuite.cru.org/;netsuite.cru.org
   - https://download.windowsupdate.com/;download.windowsupdate.com
-  - https://https://signon.okta.com/;signon.okta.com
+  - https://signon.okta.com/;signon.okta.com
 
 # Prometheus configuration.
 prometheus_monitor_prometheus: false
